@@ -42,23 +42,14 @@ void DET_ApproximateGaussianConvolution(int16_t x[])
 
 /* Approximates a derivative using finite differences
  * 
- * Approximates f(x)-f(x+h)/h where h = 1
- * This is a faster algorithm that uses bitshifting in place of signed integer division
+ * Calculates f[x]-f[x+1]. To optimize for speed, this does not divide by 2
+ * 
  */
 void DET_FastFiniteDifferences(int16_t x[])
 {
     for (uint16_t i = 0; i < CFG_PIXEL_COUNT - 1; i++)
     {
-    	// equivalent to x[i] = |x[i]-x[i+1]| / 2
     	x[i] = x[i]-x[i+1];
-        if (x[i] > 0)
-        {
-            x[i] = (int16_t)(((uint16_t)x[i]) >> 1);
-        }
-        else
-        {
-            x[i] = -(int16_t)(((uint16_t)(-x[i])) >> 1);
-        }
     }
     x[CFG_PIXEL_COUNT-1] = x[CFG_PIXEL_COUNT-2]; // Extend the array to handle the edge case
 }
