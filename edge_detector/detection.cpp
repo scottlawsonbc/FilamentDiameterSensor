@@ -26,7 +26,6 @@ void DET_BoxFilter(int16_t x[])
         x[i] = x[CFG_PIXEL_COUNT - boxFilterWindow];
     }
 }
-
  
 /* Approximates a convolution with a Gaussian kernel derivative
  * 
