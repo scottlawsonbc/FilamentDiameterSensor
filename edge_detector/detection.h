@@ -9,5 +9,5 @@
 #include <Arduino.h>
 
 uint32_t DET_NanometersBetweenEdges(int16_t x[]);
-
+uint8_t DET_PixelsBetweenEdges(int16_t x[]);
 #endif

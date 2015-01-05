@@ -129,3 +129,32 @@ uint32_t DET_NanometersBetweenEdges(int16_t x[])
 
     return nanometerDistance;
 }
+
+uint8_t DET_PixelsBetweenEdges(int16_t x[])
+{
+    /* Approximate a convolution with a gaussian kernel derivative to reduce noise */  
+    DET_ApproximateGaussianConvolution(x);
+    PRINT("Gaussian\r\n"); PRINT_ARRAY(x);
+
+    /* Compute the derivative to expose the extrema */
+    DET_FastFiniteDifferences(x);
+    PRINT("Derivative\r\n"); PRINT_ARRAY(x);
+
+    /* The two edges are the extreme of the function */
+    uint16_t edgeIndex0 = 0, edgeIndex1 = 0;
+    int16_t  edgeValue0 = 0, edgeValue1 = 0;
+    DET_Min(x, &edgeIndex0, &edgeValue0); /* Get the first edge */
+    DET_Max(x, &edgeIndex1, &edgeValue1); /* Get the second edge */
+        
+    /* Compute the distance width */
+    uint8_t pixelDistance      = (edgeIndex0 > edgeIndex1) ? (edgeIndex0-edgeIndex1):(edgeIndex1-edgeIndex0);
+
+    /* Optional debugging output */
+    PRINT_VAL("Edge 0 index: ", edgeIndex0);
+    PRINT_VAL("Edge 1 index: ", edgeIndex1);
+    PRINT_VAL("Edge 0 value: ", edgeValue0);
+    PRINT_VAL("Edge 1 value: ", edgeValue1);
+    PRINT_VAL("Distance: ", pixelDistance);
+
+    return pixelDistance;
+}
