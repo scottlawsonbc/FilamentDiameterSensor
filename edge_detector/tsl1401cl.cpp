@@ -5,9 +5,13 @@
 // 'No operation' assembly instruction
 #define NOP __asm__ __volatile__ ("nop\n\t")
 
-// Configure the ADC prescaler for faster measurements:
-const unsigned char PS_32  = (1 << ADPS2) | (1 << ADPS0);
-const unsigned char PS_128 = (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
+#if CFG_EXTERNAL_ADC
+#define EXTERNAL_ADC_CLOCK() digitalWriteFast(CFG_EXTERNAL_ADC_WRITE_PIN, LOW); \
+                             for (uint8_t i = CFG_EXTERNAL_ADC_NOPS; i > 0; --i) NOP; \
+                             digitalWriteFast(CFG_EXTERNAL_ADC_WRITE_PIN, HIGH); \
+                             for (uint8_t i = CFG_EXTERNAL_ADC_NOPS; i > 0; --i) NOP; \
+
+#endif
 
 // Send a single clock pulse to the linear sensor array
 inline void Clock()
@@ -27,10 +31,18 @@ void TSL_Init()
     pinMode(CFG_CLOCK_PIN, OUTPUT);
     pinMode(CFG_SERIAL_PIN, OUTPUT);
 
+    #if CFG_EXTERNAL_ADC
+    /* Configure the DMA register as an input */
+    pinMode(CFG_EXTERNAL_ADC_WRITE_PIN, OUTPUT);
+    digitalWriteFast(CFG_EXTERNAL_ADC_WRITE_PIN, LOW);
+    CFG_EXTERNAL_ADC_DDR = 0x00;
+    CFG_EXTERNAL_ADC_DR  = 0x00;
+    #else
     /* ADC prescalers: PS_16, PS_32, PS_64 or PS_128: */
-    ADCSRA &= ~PS_128; /* remove bits set by arduino */
-    ADCSRA |= PS_32;   /* PS_32 takes ~30 us instead of ~100 us */
+    ADCSRA &= ~CFG_ADC_PS_128;   /* remove bits set by arduino */
+    ADCSRA |= CFG_ADC_PRESCALER; /* PS_32 takes ~30 us instead of ~100 us */
     analogReference(DEFAULT);
+    #endif
 
     /* Set all IO pins low */
     digitalWriteFast(CFG_CLOCK_PIN, LOW);
@@ -71,14 +83,31 @@ void TSL_MeasurePixels(int16_t x[])
     Clock();
     digitalWriteFast(CFG_SERIAL_PIN, LOW);
 
+    /* Clear indeterminant data from the external ADC */
+    #if CFG_EXTERNAL_ADC
+    EXTERNAL_ADC_CLOCK();
+    EXTERNAL_ADC_CLOCK();
+    #endif
+
     /* Read each pixel in the array */
     for (uint16_t i = 0; i < CFG_PIXEL_COUNT; i++)
     {
+        // If no delay is used, don't create parasitic delay by making a function call
+        #if CFG_STABILIZATION_TIME_US > 0
         delayMicroseconds(CFG_STABILIZATION_TIME_US); /* delay to stabilize the pixel data */
+        #endif
+
+        #if !CFG_EXTERNAL_ADC
+        /* Read the pixel data from the internal ADC */
         x[i] = analogRead(CFG_ANALOG_INPUT_PIN);
+        #else
+        /* Start a conversion on the ADC and read it on the DMA register */
+        EXTERNAL_ADC_CLOCK();
+        /* Read the pixel data from the DMA register */
+        x[i] = CFG_EXTERNAL_ADC_IDR;
+        #endif
         Clock();
     }
-
     digitalWriteFast(CFG_SERIAL_PIN, HIGH);
     Clock();
     digitalWriteFast(CFG_SERIAL_PIN, LOW);
