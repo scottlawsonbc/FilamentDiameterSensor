@@ -3,7 +3,7 @@
 #include <stm32f30x_adc.h>
 #include <stdio.h>
 #include <math.h>
-#include "dac-output.h"
+#include "dac.h"
 #include "usart.h"
 #include "delay.h"
 #include "tsl1401cl.h"
@@ -11,51 +11,8 @@
 #include "led-bar.h"
 
 #define USART1_BAUDRATE (115200U)
-#define MOVING_AVG_SIZE (256U)
-
-/* Text buffer used for serial output */
-char text[60];
 
 int32_t intPixels[TSL_PIXEL_COUNT];
-float pixels[TSL_PIXEL_COUNT];
-double avg[MOVING_AVG_SIZE];
-double sum = 0;
-
-void Push(double x)
-{
-	uint16_t i;
-	sum -= avg[0];
-	sum += x;
-	for (i = 0; i < MOVING_AVG_SIZE-1; i++)
-	{
-		avg[i] = avg[i+1];
-	}
-	avg[MOVING_AVG_SIZE-1] = x;
-}
-
-double Pop(void)
-{
-	return sum / (double)MOVING_AVG_SIZE;
-}
-//
-//void measure(void)
-//{
-//	/* Take a bunch of measurements */
-//	uint16_t i;
-//	for (i = 0; i < MOVING_AVG_SIZE; i++)
-//	{
-//		TSL_MeasurePixelsFloat(pixels);
-//		Push((double)DET_SubpixelNanometersBetweenEdgesFloat(pixels)/(double)1000000.0);
-//
-//		if (i % 30 == 0)
-//		{
-//			/* Send the averaged distance */
-//			double distance = ((double)Pop());
-//			sprintf(text, "%f mm", distance);
-//			USART1_SendLine(text);	
-//		}
-//	}
-//}
 
 int main()
 {

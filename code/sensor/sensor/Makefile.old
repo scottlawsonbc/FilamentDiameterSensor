@@ -23,7 +23,7 @@ error:
 	$(error Invalid configuration, please check your inputs)
 endif
 
-SOURCEFILES := $(BSP_ROOT)/STM32F30xxx/CMSIS/Device/ST/STM32F30x/Source/Templates/system_stm32f30x.c $(BSP_ROOT)/STM32F30xxx/startup_stm32f30x.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_adc.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_can.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_comp.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_crc.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_dac.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_dbgmcu.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_dma.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_exti.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_flash.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_gpio.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_i2c.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_iwdg.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_misc.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_opamp.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_pwr.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_rcc.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_rtc.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_spi.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_syscfg.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_tim.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_usart.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_wwdg.c LEDBlink.c
+SOURCEFILES := $(BSP_ROOT)/STM32F30xxx/CMSIS/Device/ST/STM32F30x/Source/Templates/system_stm32f30x.c $(BSP_ROOT)/STM32F30xxx/startup_stm32f30x.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_adc.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_can.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_comp.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_crc.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_dac.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_dbgmcu.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_dma.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_exti.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_flash.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_gpio.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_i2c.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_iwdg.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_misc.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_opamp.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_pwr.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_rcc.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_rtc.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_spi.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_syscfg.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_tim.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_usart.c $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_wwdg.c source/dac-output.c source/delay.c source/edge-detection.c source/led-bar.c source/main.c source/tsl1401cl.c source/usart.c
 EXTERNAL_LIBS := 
 EXTERNAL_LIBS_COPIED := $(foreach lib, $(EXTERNAL_LIBS),$(BINARYDIR)/$(notdir $(lib)))
 
@@ -258,5 +258,33 @@ $(BINARYDIR)/stm32f30x_usart.o : $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Dri
 
 
 $(BINARYDIR)/stm32f30x_wwdg.o : $(BSP_ROOT)/STM32F30xxx/STM32F30x_StdPeriph_Driver/src/stm32f30x_wwdg.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/dac-output.o : source/dac-output.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/delay.o : source/delay.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/edge-detection.o : source/edge-detection.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/led-bar.o : source/led-bar.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/main.o : source/main.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/tsl1401cl.o : source/tsl1401cl.c $(all_make_files) |$(BINARYDIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
+
+
+$(BINARYDIR)/usart.o : source/usart.c $(all_make_files) |$(BINARYDIR)
 	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
 

@@ -1,5 +1,5 @@
 #include "tsl1401cl.h"
-#include "dac-output.h"
+#include "dac.h"
 #include "stm32f30x_dac.h"
 #include "stm32f30x_dma.h"
 #include "stm32f30x_gpio.h"

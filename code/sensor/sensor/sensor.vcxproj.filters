@@ -97,9 +97,6 @@
     <ClCompile Include="..\..\..\..\..\..\AppData\Local\VisualGDB\EmbeddedBSPs\arm-eabi\com.sysprogs.arm.stm32\STM32F30xxx\STM32F30x_StdPeriph_Driver\src\stm32f30x_wwdg.c">
       <Filter>Source files\Device-specific files</Filter>
     </ClCompile>
-    <ClCompile Include="source\dac-output.c">
-      <Filter>Source files</Filter>
-    </ClCompile>
     <ClCompile Include="source\delay.c">
       <Filter>Source files</Filter>
     </ClCompile>
@@ -116,6 +113,9 @@
       <Filter>Source files</Filter>
     </ClCompile>
     <ClCompile Include="source\usart.c">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\dac.c">
       <Filter>Source files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -237,9 +237,6 @@
     <ClInclude Include="..\..\..\..\..\..\AppData\Local\VisualGDB\EmbeddedBSPs\arm-eabi\com.sysprogs.arm.stm32\STM32F30xxx\STM32F30x_StdPeriph_Driver\inc\stm32f30x_wwdg.h">
       <Filter>Header files\Device-specific files</Filter>
     </ClInclude>
-    <ClInclude Include="source\dac-output.h">
-      <Filter>Header files</Filter>
-    </ClInclude>
     <ClInclude Include="source\delay.h">
       <Filter>Header files</Filter>
     </ClInclude>
@@ -253,6 +250,9 @@
       <Filter>Header files</Filter>
     </ClInclude>
     <ClInclude Include="source\usart.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\dac.h">
       <Filter>Header files</Filter>
     </ClInclude>
   </ItemGroup>

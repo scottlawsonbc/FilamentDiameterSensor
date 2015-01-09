@@ -3,7 +3,7 @@
 #include <math.h>
 #include "tsl1401cl.h"
 #include "edge-detection.h"
-#include "dac-output.h"
+#include "dac.h"
 
 /* Performs a box filter on the given array
 *
