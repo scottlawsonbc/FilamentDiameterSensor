@@ -26,6 +26,7 @@ $RECYCLE.BIN/
 *.user
 *.ncb
 *.sdf
+*.opensdf
 Debug/
 Release/
 
