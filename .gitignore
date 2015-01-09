@@ -14,16 +14,6 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 
-# Notepad .BAK files
-*.bak
-
-# Visual Studio files
-*.suo
-*.user
-*.ncb
-Debug/
-Release/
-
 # Solidworks temp files
 ~$*
 
