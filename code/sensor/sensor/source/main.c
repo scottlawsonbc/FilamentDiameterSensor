@@ -9,9 +9,10 @@
 #include "tsl1401cl.h"
 #include "edge-detection.h"
 #include "led-bar.h"
+#include "opamp.h"
 
 #define USART1_BAUDRATE (115200U)
-
+char buffer[60];
 int32_t intPixels[TSL_PIXEL_COUNT];
 
 int main()
@@ -20,14 +21,30 @@ int main()
 	Delay_Init();
 	TSL_Init();
 	LED_Init();
-	DAC_Setup();
-
+	
+	//PGA_Init();
+	//DAC_Setup();
+	
+	//LED_Write(0, Bit_SET);
+	//LED_Write(1, Bit_SET);
 	LED_Write(2, Bit_SET);
+	//LED_Write(3, Bit_SET);
+	//LED_Write(4, Bit_SET);
+	float sum = 0;
 
 	while(1)
 	{
-		TSL_MeasurePixels(intPixels);
-		DET_MicronsBetweenEdges(intPixels);		
+		uint8_t i;
+		sum = 0;
+		for (i=0; i<100;i++)
+		{
+			TSL_MeasurePixels(intPixels);
+			float dist = DET_MicronsBetweenEdges(intPixels);	
+			sum += dist;
+		}
+		sum /= 100.0f;
+		sprintf(buffer, "%f", sum);
+		USART1_SendLine(buffer);
 	}
 }
 //****************************************************************************

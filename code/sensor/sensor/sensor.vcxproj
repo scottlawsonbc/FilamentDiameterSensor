@@ -90,6 +90,7 @@
     <ClCompile Include="source\edge-detection.c" />
     <ClCompile Include="source\led-bar.c" />
     <ClCompile Include="source\main.c" />
+    <ClCompile Include="source\opamp.c" />
     <ClCompile Include="source\tsl1401cl.c" />
     <ClCompile Include="source\usart.c" />
   </ItemGroup>
@@ -139,6 +140,7 @@
     <ClInclude Include="source\delay.h" />
     <ClInclude Include="source\edge-detection.h" />
     <ClInclude Include="source\led-bar.h" />
+    <ClInclude Include="source\opamp.h" />
     <ClInclude Include="source\tsl1401cl.h" />
     <ClInclude Include="source\usart.h" />
   </ItemGroup>

@@ -13,7 +13,7 @@
 
 /* Timing parameters */
 #define TSL_CHARGE_TRANSFER_TIME_US (20U)
-#define TSL_SENSOR_DELAY_US         (TSL_CHARGE_TRANSFER_TIME_US + 20U)
+#define TSL_SENSOR_DELAY_US         (TSL_CHARGE_TRANSFER_TIME_US + 10U)
 #define TSL_CLOCK_DELAY_US          (0U)
 
 /* Digital pins connected to GPIOE */
@@ -25,7 +25,6 @@
 
 extern void TSL_Init();
 extern void TSL_MeasurePixels(int32_t *pixels);
-extern void TSL_MeasurePixelsFloat(float *pixels);
 
 
 #endif

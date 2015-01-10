@@ -135,14 +135,3 @@ void TSL_MeasurePixels(int32_t *pixels)
 	/* This returns the analog output to a known high impedance state */
 	TSL_ClockPulse();
 }
-
-void TSL_MeasurePixelsFloat(float *pixels)
-{
-	uint16_t i;
-	int32_t integerPixels[TSL_PIXEL_COUNT];
-	TSL_MeasurePixels(integerPixels);
-	for (i = 0; i < TSL_PIXEL_COUNT; i++)
-	{
-		pixels[i] = (float)integerPixels[i];
-	}
-}

@@ -63,7 +63,9 @@ void DET_FastFiniteDifferences(int32_t x[])
 void DET_MinMaxIndex(const int32_t x[], uint16_t *minIndex, uint16_t *maxIndex)
 {
 	uint32_t i;
-	int32_t min = 0, max = 0;
+	int32_t min = x[0], max = x[0];
+	*minIndex = 0;
+	*maxIndex = 0;
 	for (i = 0; i < TSL_PIXEL_COUNT; i++)
 	{
 		if (x[i] > max)
@@ -102,7 +104,8 @@ float DET_MicronsBetweenEdges(int32_t x[])
 	DET_MinMaxIndex(x, &minEdge, &maxEdge);
 	float subpixelMinEdge = DET_SubpixelEdge(x, minEdge);
 	float subpixelMaxEdge = DET_SubpixelEdge(x, maxEdge);
-	float nanometers = (subpixelMinEdge - subpixelMaxEdge)*(float)TSL_PIXEL_SPACING_NM/1000.0f;
+	float microns = (subpixelMinEdge - subpixelMaxEdge)*(float)TSL_PIXEL_SPACING_NM/1000.0f;
+	return microns;
 }
 //
 ///* Detects the edges and returns the distance in pixels between them
