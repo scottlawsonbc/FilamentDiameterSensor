@@ -12,9 +12,14 @@ inline void TSL_ClockPulse(void)
 	GPIO_WriteBit(GPIOE, TSL_CLOCK_PIN, Bit_RESET); /* Falling edge */
 }
 
-/* Sends a clock pulse with a high SI bit, then sets SI low */
-inline void TSL_StartOutputCycle(void)
-{
+/* Sets SI high for the rising edge of a clock pulse, then sets SI low before the falling edge.
+ *
+ * This initiates an output cycle for the following 128 clock cycles.
+ * Photodiode integration for the next cycle begins on the 19th clock pulse folowing
+ * the start of an output cycle.
+ */
+ inline void TSL_StartOutputCycle(void)
+ {
 	/* Rising edge */
 	GPIO_WriteBit(GPIOE, TSL_SERIAL_PIN, Bit_SET);
 	DelayUs(1); /* Make sure SI pin is high before CLK goes high */
