@@ -28,7 +28,7 @@
                     <TextBlock Text="Edges:" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
                     <TextBlock x:Name="edges0Text" Text="(0.123, 123.32)" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
                 </StackPanel>
-                <!-- Edges -->
+                <!-- Width -->
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Width:" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
                     <TextBlock x:Name="width0Text" Text="1.75 mm" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
@@ -56,18 +56,33 @@
                     <TextBlock Text="Edges:" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
                     <TextBlock x:Name="edges1Text" Text="(0.123, 123.32)" FontFamily="Segoe UI" FontSize="16" Margin="5"/>
                 </StackPanel>
-                <!-- Edges -->
+                <!-- Width -->
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Width:" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
                     <TextBlock x:Name="width1Text" Text="1.75 mm" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
                 </StackPanel>
+
                 <!-- Estimates -->
-                <TextBlock Text="Filament" Background="#c2ecff" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
-                <!-- Edges -->
+                <TextBlock Text="Filament measurements" Background="#c2ecff" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
+                <!-- Filament diameter -->
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Diameter:" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
                     <TextBlock x:Name="filamentDiameterText" Text="1.75 mm" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
                 </StackPanel>
+
+                <!-- Diameter error -->
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Diameter error:" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
+                    <TextBlock x:Name="filamentErrorText" Text="+10%" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
+                </StackPanel>
+
+                <!-- Area error -->
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Cross-sectional area error:" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
+                    <TextBlock x:Name="areaErrorText" Text="+10%" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
+                </StackPanel>
+
+
 
                 <!-- Code properties -->
                 <DockPanel>

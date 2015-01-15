@@ -90,7 +90,26 @@ namespace X
             }
             if (compilationSuccessful)
             {
-                filamentDiameterText.Text = string.Format("{0:F3} mm", ExecuteUserCode());
+                UpdateMeasurements(ExecuteUserCode());
+            }
+        }
+
+        private void UpdateMeasurements(double diameter)
+        {
+            double diameterError = 100.0 - diameter / 3.00 * 100.00;
+            double areaError = 100.0 - (diameter * diameter) / 9.00 * 100.0;
+
+            filamentDiameterText.Text = string.Format("{0:F3} mm", diameter);
+
+            if (diameterError > 0.0)
+            {
+                filamentErrorText.Text = string.Format("+{0:F2}%", diameterError);
+                areaErrorText.Text = string.Format("+{0:F2}%", areaError);
+            }
+            else
+            {
+                filamentErrorText.Text = string.Format("{0:F2}%", diameterError);
+                areaErrorText.Text = string.Format("{0:F2}%", areaError);
             }
         }
 

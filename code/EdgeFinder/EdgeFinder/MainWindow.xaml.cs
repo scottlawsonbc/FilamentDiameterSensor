@@ -81,6 +81,7 @@ namespace EdgeFinder
             UpdateCoords();
             DetectionPossible();
             UpdateDistances();
+            RunUserCode();
         }
 
         private void UpdateDistances()
