@@ -1,0 +1,91 @@
+﻿<Window x:Class="EdgeFinder.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Filament Diameter Simulator" Height="700" Width="1000" PreviewKeyDown="keyDown" PreviewKeyUp="keyUp">
+    <DockPanel>
+
+        <Border BorderBrush="Gray" BorderThickness="1" Margin="4">
+            <StackPanel DockPanel.Dock="Left" Height="661" VerticalAlignment="Top" >
+                <!-- Sensor X properties -->
+                <TextBlock Text="Sensor X" Background="#c2ecff" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top" Width="275" />
+                <!-- X Offset -->
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="X-offset:" FontWeight="SemiBold" FontFamily="5 UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
+                    <TextBlock x:Name="xOffsetText"  Text="5.00 mm" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
+                </StackPanel>
+                <!-- Distances -->
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Distances:" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
+                    <TextBlock x:Name="distances0Text"  Text="35.00 mm, 15.00 mm" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
+                </StackPanel>
+                <!-- Total distance -->
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Total:" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
+                    <TextBlock x:Name="totalDistance0Text"  Text="50.00 mm" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
+                </StackPanel>
+                <!-- Edges -->
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Edges:" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
+                    <TextBlock x:Name="edges0Text" Text="(0.123, 123.32)" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
+                </StackPanel>
+                <!-- Edges -->
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Width:" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
+                    <TextBlock x:Name="width0Text" Text="1.75 mm" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
+                </StackPanel>
+
+                <!-- Sensor Y properties -->
+                <TextBlock Text="Sensor Y" Background="#c2ecff" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
+                <!-- Y Offset -->
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Y-offset:" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
+                    <TextBlock x:Name="yOffsetText"  Text="5.00 mm" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
+                </StackPanel>
+                <!-- Distances -->
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Distances:" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
+                    <TextBlock x:Name="distances1Text"  Text="35.00 mm, 15.00 mm" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
+                </StackPanel>
+                <!-- Total distance -->
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Total:" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
+                    <TextBlock x:Name="totalDistance1Text"  Text="50.00 mm" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
+                </StackPanel>
+                <!-- Edges -->
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Edges:" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
+                    <TextBlock x:Name="edges1Text" Text="(0.123, 123.32)" FontFamily="Segoe UI" FontSize="16" Margin="5"/>
+                </StackPanel>
+                <!-- Edges -->
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Width:" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
+                    <TextBlock x:Name="width1Text" Text="1.75 mm" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
+                </StackPanel>
+                <!-- Estimates -->
+                <TextBlock Text="Filament" Background="#c2ecff" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
+                <!-- Edges -->
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Diameter:" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
+                    <TextBlock x:Name="filamentDiameterText" Text="1.75 mm" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
+                </StackPanel>
+
+                <!-- Code properties -->
+                <DockPanel>
+                    <TextBlock Text="Calculator" Background="#c2ecff" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top" />
+                    <Button x:Name="lastErrorButton" Content="Show compiler errors" Background="White" FontFamily="Segoe UI" FontSize="16" DockPanel.Dock="Top" Margin="3" Click="ShowLastError_Click" />
+                    <Button x:Name="openCodeButton" Content="Open code" DockPanel.Dock="Top" FontFamily="Segoe UI" FontSize="16" Background="White" Margin="3" Click="ShowCodeButton_Click"/>
+                </DockPanel>
+            </StackPanel>
+        </Border>
+
+        <Canvas Grid.Row="0" x:Name="LayoutRoot" Background="White">
+            <Ellipse x:Name="led0" Fill="red" HorizontalAlignment="Center" Height="20" Stroke="Black" VerticalAlignment="Center" Width="20" MouseLeftButtonDown="shape_MouseLeftButtonDown" MouseMove="shape_MouseMove" MouseLeftButtonUp="shape_MouseLeftButtonUp" Canvas.Left="10" Canvas.Top="87"/>
+            <Ellipse x:Name="led1" Fill="red" HorizontalAlignment="Center" Height="20" Stroke="Black" VerticalAlignment="Center" Width="20" MouseLeftButtonDown="shape_MouseLeftButtonDown" MouseMove="shape_MouseMove" MouseLeftButtonUp="shape_MouseLeftButtonUp" Canvas.Left="483" Canvas.Top="541"/>
+            <Ellipse x:Name="filament" Fill="Blue" HorizontalAlignment="Center" Height="30" Stroke="Black" VerticalAlignment="Center" Width="30" MouseLeftButtonDown="shape_MouseLeftButtonDown" MouseMove="shape_MouseMove" MouseLeftButtonUp="shape_MouseLeftButtonUp" Canvas.Left="476" Canvas.Top="82"/>
+            <Rectangle x:Name="sensor0" Fill="Gray" Height="100" Stroke="Black" Width="10" HorizontalAlignment="Left" VerticalAlignment="Bottom" Canvas.Left="573" Canvas.Top="50" MouseLeftButtonDown="shape_MouseLeftButtonDown" MouseLeftButtonUp="shape_MouseLeftButtonUp" MouseMove="shape_MouseMove"/>
+            <Rectangle x:Name="sensor1" Fill="Gray" Height="10" Stroke="Black" Width="100" HorizontalAlignment="Left" VerticalAlignment="Bottom" Canvas.Left="433" Canvas.Top="10" MouseLeftButtonDown="shape_MouseLeftButtonDown" MouseLeftButtonUp="shape_MouseLeftButtonUp" MouseMove="shape_MouseMove"/>
+        </Canvas>
+
+
+    </DockPanel>
+</Window>
