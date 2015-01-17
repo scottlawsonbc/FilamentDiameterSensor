@@ -25,7 +25,7 @@ namespace EdgeFinder
         const string DEFAULT_CODE = @"using System;
 namespace X
 {
-    public class X
+    public class DiameterCalculator
     {
         public double ComputeDiameter(double xWidth, double yWidth, double xOffset, double yOffset, double xDist, double yDist)
         {
