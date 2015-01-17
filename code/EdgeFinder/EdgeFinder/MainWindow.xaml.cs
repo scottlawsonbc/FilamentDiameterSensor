@@ -98,7 +98,7 @@ namespace EdgeFinder
 
             // Distances 1
             double dist1x0 = (led1Y - filamentY) / DIST_MULT;
-            double dist1x1 = (filamentY - (sensor1Y + sensor1.Width / 2)) / DIST_MULT;
+            double dist1x1 = (filamentY - (sensor1Y + sensor1.Height / 2)) / DIST_MULT;
             double dist1Total = dist1x0 + dist1x1; //Math.Sqrt(dist1x0 * dist1x0 + dist1x1 * dist1x1);
             var dist1Text = string.Format("{0:F2} mm, {1:F2} mm", dist1x0, dist1x1);
             var dist1TotalText = string.Format("{0:F2} mm", dist1Total);
@@ -339,7 +339,7 @@ namespace EdgeFinder
 
         double xWidth, yWidth, xDist, yDist, xOffset, yOffset;
 
-        private void setValues()
+        private void setValues() // No longer used
         {
             double sensor0edge0 = (sensor0Y + sensor0.Height / 2.0 - l0s0.Y2) / DIST_MULT;
             double sensor0edge1 = (sensor0Y + sensor0.Height / 2.0 - l1s0.Y2) / DIST_MULT;
@@ -379,16 +379,18 @@ namespace EdgeFinder
         {
             double origin_x = Canvas.GetLeft(sensor0) + sensor0.Width;
             double origin_y = Canvas.GetTop(sensor1);
-            
+
             // A coordinates
             A.LED_x = (origin_x-(Canvas.GetLeft(led0) + led0.Width / 2.0))/DIST_MULT;
-            A.LED_y = ((Canvas.GetTop(led0) + led0.Height / 2.0) - origin_y) / DIST_MULT;
+            //A.LED_y = ((Canvas.GetTop(led0) + led0.Height / 2.0) - origin_y) / DIST_MULT;
+            A.LED_y = ((Canvas.GetTop(led0)) - origin_y) / DIST_MULT;
             A.edge_0 = (l0s0.Y2 - origin_y) / DIST_MULT;
             A.edge_1 = (l1s0.Y2 - origin_y) / DIST_MULT;
 
             // B coordinates
             B.LED_x = (origin_x - (Canvas.GetLeft(led1) + led1.Width / 2.0)) / DIST_MULT;
-            B.LED_y = ((Canvas.GetTop(led1) + led1.Height / 2.0) - origin_y) / DIST_MULT;
+            //B.LED_y = ((Canvas.GetTop(led1) + led1.Height / 2.0) - origin_y) / DIST_MULT;
+            B.LED_y = ((Canvas.GetTop(led1)) - origin_y) / DIST_MULT;
             B.edge_0 = (origin_x - l1s1.X2) / DIST_MULT;
             B.edge_1 = (origin_x - l0s1.X2) / DIST_MULT;
         }
