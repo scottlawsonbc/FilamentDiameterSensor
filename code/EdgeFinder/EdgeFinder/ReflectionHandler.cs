@@ -23,16 +23,40 @@ namespace EdgeFinder
     {
         const string CODE_PATH = "calculator-code.cs";
         const string DEFAULT_CODE = @"using System;
+
 namespace X
 {
-    public class X
+<<<<<<< HEAD
+
+public class DiameterCalculator
+{
+    public double ComputeDiameter(double LEDA_x, double LEDA_y,
+                                  double LEDB_x, double LEDB_y,
+                                  double edgeA_0, double edgeA_1,
+                                  double edgeB_0, double edgeB_1)
+=======
+    public class DiameterCalculator
+>>>>>>> origin/master
     {
-        public double ComputeDiameter(double xWidth, double yWidth, double xOffset, double yOffset, double xDist, double yDist)
-        {
-            return 0.0;
-        }
+        // Location of the center of filament
+        double filament_x = (edgeB_0 + edgeB_1) / 2.0;
+        double filament_y = (edgeA_0 + edgeA_1) / 2.0;
+
+        // Diameter for A
+        double LEDA_to_filament = LEDA_x - filament_x;
+        double A_diameter = (LEDA_to_filament * (edgeA_1 - edgeA_0)) / LEDA_x;
+
+        // Diameter for B
+        double LEDB_to_filament = LEDB_y - filament_y;
+        double B_diameter = (LEDB_to_filament * (edgeB_1 - edgeB_0)) / LEDB_y;
+
+        // Return the mean of the two diameters
+        return (A_diameter + B_diameter) / 2.0;
     }
-}";
+}
+}
+
+";
         // Contains the results of the realtime compilation
         object o;
         DateTime lastModifiedTime = DateTime.Now.AddYears(-10); // Tracks the last time the code file was modified
