@@ -1,0 +1,13 @@
+﻿"x_a1" = "A_edge_1@Shadows" - "A_LED_y@LEDs"
+"x_a0" = "A_edge_0@Shadows" - "A_LED_y@LEDs"
+"x_b1" = "B_edge_1@Shadows" - "B_LED_x@LEDs"
+"x_b0" = "B_edge_0@Shadows" - "B_LED_x@LEDs"
+
+"X_a"= "A_LED_x@LEDs" * tan(0.5*(atn(x_a1 / "A_LED_x@LEDs") + atn(x_a0 / "A_LED_x@LEDs")))
+"X_b"= "B_LED_y@LEDs" * tan(0.5*(atn(x_b1 / "B_LED_y@LEDs") + atn(x_b0 / "B_LED_y@LEDs")))
+
+"fil_x"= ("B_LED_y@LEDs" * X_a * ("B_LED_x@LEDs" - "A_LED_x@LEDs" + X_b) + ("B_LED_y@LEDs" * "A_LED_x@LEDs" * "A_LED_y@LEDs")) / (("B_LED_y@LEDs" * "A_LED_x@LEDs") + (X_a * X_b))
+"fil_y"= (X_b * "A_LED_x@LEDs" * ("A_LED_y@LEDs" + X_a - "B_LED_y@LEDs") + ("B_LED_y@LEDs" * "A_LED_x@LEDs" * "B_LED_x@LEDs")) / (("B_LED_y@LEDs" * "A_LED_x@LEDs") + (X_b * X_a))
+
+"d_a"= 2.0 * (1.0 - (fil_x / "A_LED_x@LEDs")) * sqr(("A_LED_x@LEDs" * "A_LED_x@LEDs") + (X_a * X_a)) * sin(0.5 * ( atn(x_a1/"A_LED_x@LEDs") - atn(x_a0/"A_LED_x@LEDs")))
+s
