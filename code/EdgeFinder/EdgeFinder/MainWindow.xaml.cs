@@ -16,9 +16,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Extensions;
 
 namespace EdgeFinder
 {
+
     public struct SensorCoordinates
     {
         public double LED_x;
@@ -32,8 +34,63 @@ namespace EdgeFinder
     /// </summary>
     public partial class MainWindow : Window
     {
-        const double DIST_MULT = 10.0;
+        double widthA = 0;
+        double widthB = 0;
 
+        private Point LEDA
+        {
+            get
+            {
+                var x = (Canvas.GetLeft(led0) + led0.Width / 2.0);
+                var y = (Canvas.GetTop(led0) + led0.Height / 2.0);
+                return new Point(x, y);
+            }
+        }
+
+        private Point LEDB
+        {
+            get
+            {
+                var x = Canvas.GetLeft(led1) + led1.Width / 2.0;
+                var y = Canvas.GetTop(led1) + led1.Height / 2.0;
+                return new Point(x, y);
+            }
+        }
+
+        private Point EdgeA_0
+        {
+            get { return new Point(Canvas.GetLeft(sensor0), Canvas.GetTop(sensor0)); }
+        }
+        private Point EdgeA_1
+        {
+            get { return new Point(Canvas.GetLeft(sensor0), Canvas.GetTop(sensor0) + sensor0.Height); }
+        }
+
+        private Point EdgeB_0
+        {
+            get { return new Point(Canvas.GetLeft(sensor1), Canvas.GetTop(sensor1) + sensor1.Height); }
+        }
+        private Point EdgeB_1
+        {
+            get { return new Point(Canvas.GetLeft(sensor1) + sensor1.Width, Canvas.GetTop(sensor1) + sensor1.Height); }
+        }
+
+        private Point EdgeADetected_0 { get; set; }
+        private Point EdgeADetected_1 { get; set; }
+        private Point EdgeBDetected_0 { get; set; }
+        private Point EdgeBDetected_1 { get; set; }
+
+        private Point Filament
+        {
+            get
+            {
+                double x = Canvas.GetLeft(filament) + filament.Width / 2.0;
+                double y = Canvas.GetTop(filament) + filament.Height / 2.0;
+                return new Point(x, y);
+            }
+        }
+
+        const double DIST_MULT = 10.0;
         BrushConverter converter = new System.Windows.Media.BrushConverter();
         Brush ledColor, validColor, errorColor;
 
@@ -41,13 +98,6 @@ namespace EdgeFinder
         bool captured = false;
         double x_shape, x_canvas, y_shape, y_canvas;
         UIElement source = null;
-        Line l0s0, l1s0, lms0;
-        Line l0s1, l1s1, lms1;
-
-        // Coordinates for the shapes
-        double led0X, led0Y, led1X, led1Y;
-        double sensor0X, sensor0Y, sensor1X, sensor1Y;
-        double filamentX, filamentY;
 
         bool deltaXAllowed = true;
         bool deltaYAllowed = true;
@@ -59,223 +109,59 @@ namespace EdgeFinder
             ledColor = (Brush)converter.ConvertFromString("#c71153");
         }
 
-        private void UpdateCoords()
-        {
-            led0X = Canvas.GetLeft(led0) + led0.Width / 2;
-            led0Y = Canvas.GetTop(led0) + led0.Height / 2;
-            led1X = Canvas.GetLeft(led1) + led1.Width / 2;
-            led1Y = Canvas.GetTop(led1) + led1.Height / 2;
-            filamentX = Canvas.GetLeft(filament) + filament.Width / 2;
-            filamentY = Canvas.GetTop(filament) + filament.Height / 2;
-            sensor0X = Canvas.GetLeft(sensor0) + sensor0.Width / 2;
-            sensor0Y = Canvas.GetTop(sensor0) + sensor0.Height / 2;
-            sensor1X = Canvas.GetLeft(sensor1) + sensor1.Width / 2;
-            sensor1Y = Canvas.GetTop(sensor1) + sensor1.Height / 2;
-        }
-
         public MainWindow()
         {
             InitializeComponent();
             InitBrushes();
-            InitLines();
-            UpdateCoords();
-            DetectionPossible();
             UpdateDistances();
             RunUserCode();
         }
 
         private void UpdateDistances()
         {
-            UpdateCoords();
             // Distances 0
-            double dist0x0 = (filamentX - led0X) / DIST_MULT;
-            double dist0x1 = ((sensor0X - sensor0.Width / 2) - filamentX) / DIST_MULT;
-            double dist0Total = dist0x0 + dist0x1; // Math.Sqrt(dist0x0 * dist0x0 + dist0x1 * dist0x1);
-            var dist0Text = string.Format("{0:F2} mm, {1:F2} mm", dist0x0, dist0x1);
-            var dist0TotalText = string.Format("{0:F2} mm", dist0Total);
+            var df = Point.Subtract(Filament, LEDA);
+            double ddf = Math.Sqrt(df.X * df.X + df.Y * df.Y) / DIST_MULT;
+            var dt = Point.Subtract(EdgeA_0, LEDA);
+            dt.Y += sensor0.Height / 2.0;
+            double ddt = Math.Sqrt(dt.X * dt.X + dt.Y * dt.Y) / DIST_MULT;
+            var dist0Text = string.Format("{0:F2} mm", ddf);
+            var dist0TotalText = string.Format("{0:F2} mm", ddt);
             distances0Text.Text = dist0Text;
             totalDistance0Text.Text = dist0TotalText;
 
-            // Distances 1
-            double dist1x0 = (led1Y - filamentY) / DIST_MULT;
-            double dist1x1 = (filamentY - (sensor1Y + sensor1.Height / 2)) / DIST_MULT;
-            double dist1Total = dist1x0 + dist1x1; //Math.Sqrt(dist1x0 * dist1x0 + dist1x1 * dist1x1);
-            var dist1Text = string.Format("{0:F2} mm, {1:F2} mm", dist1x0, dist1x1);
-            var dist1TotalText = string.Format("{0:F2} mm", dist1Total);
+            //// Distances 1
+            df = Point.Subtract(Filament, LEDB);
+            ddf = Math.Sqrt(df.X * df.X + df.Y * df.Y) / DIST_MULT;
+            dt = Point.Subtract(EdgeB_0, LEDB);
+            dt.Y += sensor1.Width / 2.0;
+            ddt = Math.Sqrt(dt.X * dt.X + dt.Y * dt.Y) / DIST_MULT;
+            var dist1Text = string.Format("{0:F2} mm", ddf);
+            var dist1TotalText = string.Format("{0:F2} mm", ddt);
             distances1Text.Text = dist1Text;
             totalDistance1Text.Text = dist1TotalText;
 
-            // Edges 0
-            bool sensor0Hit = (l0s0.Y2 > (sensor0Y - sensor0.Height / 2)) && (l1s0.Y2 < (sensor0Y + sensor0.Height / 2)) && (sensor0X - sensor0.Width / 2 > filamentX + filament.Width / 2);
-            if (sensor0Hit)
-            {
-                double sensor0edge0 = sensor0Y + sensor0.Height / 2.0 - l0s0.Y2;
-                double sensor0edge1 = sensor0Y + sensor0.Height / 2.0 - l1s0.Y2;
-                double width = Math.Abs(sensor0edge1 - sensor0edge0) / DIST_MULT;
-                var edgeText = string.Format("({0:F2}, {1:F2})", sensor0edge0, sensor0edge1);
-                var widthText = string.Format("{0:F3} mm", width);
-                edges0Text.Text = edgeText;
-                width0Text.Text = widthText;
-            }
-            else
-            {
-                edges0Text.Text = "--";
-                width0Text.Text = "--";
-            }
+            //// Edges 0
+            var edgeText = string.Format("({0:F3}, {1:F3})", EdgeADetected_0.Y, EdgeADetected_1.Y);
+            var widthText = string.Format("{0:F3} mm", widthA / DIST_MULT);
+            edges0Text.Text = edgeText;
+            width0Text.Text = widthText;
 
-            // Edges 1
-            bool sensor1Hit = (l0s1.X2 > (sensor1X - sensor1.Width / 2)) && (l1s1.X2 < (sensor1X + sensor1.Width / 2)) && (sensor1Y + sensor1.Height / 2 < filamentY - filament.Height / 2);
-            if (sensor1Hit)
-            {
-                double sensor1edge0 = l0s1.X2 - sensor1X + sensor1.Width / 2.0;
-                double sensor1edge1 = l1s1.X2 - sensor1X + sensor1.Width / 2.0;
-                double width = Math.Abs(sensor1edge1 - sensor1edge0) / DIST_MULT;
-                var edgeText = string.Format("({0:F2}, {1:F2})", sensor1edge0, sensor1edge1);
-                var widthText = string.Format("{0:F3} mm", width);
-                edges1Text.Text = edgeText;
-                width1Text.Text = widthText;
-            }
-            else
-            {
-                edges1Text.Text = "--";
-                width1Text.Text = "--";
-            }
+            //// Edges 1
+            edgeText = string.Format("({0:F3}, {1:F3})", EdgeBDetected_0.X, EdgeBDetected_1.X);
+            widthText = string.Format("{0:F3} mm", widthB / DIST_MULT);
+            edges1Text.Text = edgeText;
+            width1Text.Text = widthText;
 
-            // X Offset
+            //// X Offset
             double xOffset = (Canvas.GetLeft(sensor1) - (Canvas.GetLeft(sensor0) - sensor1.Width)) / DIST_MULT;
             xOffsetText.Text = string.Format("{0:F2} mm", xOffset);
 
-            // Y Offset
+            //// Y Offset
             double yOffset = (Canvas.GetTop(sensor1) - (Canvas.GetTop(sensor0) - sensor1.Height)) / DIST_MULT;
             yOffsetText.Text = string.Format("{0:F2} mm", yOffset);
 
         }
-
-        private void InitLines()
-        {
-            UpdateCoords();
-            // Shadow edge lines
-            l0s0 = new Line();
-            l1s0 = new Line();
-            l0s1 = new Line();
-            l1s1 = new Line();
-            // Midpoint lines
-            lms0 = new Line();
-            lms1 = new Line();
-
-            // Stroke
-            l0s0.Stroke = ledColor;
-            l1s0.Stroke = ledColor;
-            l0s1.Stroke = ledColor;
-            l1s1.Stroke = ledColor;
-            lms0.Stroke = Brushes.Gray;
-            lms1.Stroke = Brushes.Gray;
-
-            lms0.StrokeDashArray = new DoubleCollection(new double[] { 20.0, 20.0 });
-            lms1.StrokeDashArray = new DoubleCollection(new double[] { 20.0, 20.0 });
-
-            // Stroke width
-            l0s0.StrokeThickness = 0.75;
-            l1s0.StrokeThickness = .75;
-            l0s1.StrokeThickness = .75;
-            l1s1.StrokeThickness = .75;
-            lms0.StrokeThickness = .75;
-            lms1.StrokeThickness = .75;
-
-            // Add to main canvas
-            DrawLines();
-            LayoutRoot.Children.Add(l0s0);
-            LayoutRoot.Children.Add(l1s0);
-            LayoutRoot.Children.Add(lms0);
-            LayoutRoot.Children.Add(l0s1);
-            LayoutRoot.Children.Add(l1s1);
-            LayoutRoot.Children.Add(lms1);
-        }
-
-        private void DrawLines()
-        {
-            UpdateCoords();
-            // X1 Coords
-            l0s0.X1 = led0X;
-            l1s0.X1 = led0X;
-            lms0.X1 = led0X;
-            l0s1.X1 = led1X;
-            l1s1.X1 = led1X;
-            lms1.X1 = led1X;
-
-            // Y1 coords
-            l0s0.Y1 = led0Y;
-            l1s0.Y1 = led0Y;
-            lms0.Y1 = led0Y;
-            l0s1.Y1 = led1Y;
-            l1s1.Y1 = led1Y;
-            lms1.Y1 = led1Y;
-
-            // X2 Coords
-            l0s0.X2 = filamentX;
-            l1s0.X2 = filamentX;
-            lms0.X2 = filamentX;
-            l0s1.X2 = filamentX - filament.Width / 2;
-            l1s1.X2 = filamentX + filament.Width / 2;
-            lms1.X2 = filamentX;
-
-            // Y2 coords
-            l0s0.Y2 = filamentY - filament.Height / 2;
-            l1s0.Y2 = filamentY + filament.Height / 2;
-            lms0.Y2 = filamentY;
-            l0s1.Y2 = filamentY;
-            l1s1.Y2 = filamentY;
-            lms1.Y2 = filamentY;
-
-            // Extend the lines to the sensors
-            double dist0 = Math.Sqrt((sensor0X - filamentX) * (sensor0X - filamentX) + (sensor0Y - filamentY) * (sensor0Y - filamentY));
-            double dist1 = Math.Sqrt((sensor1Y - filamentY) * (sensor1Y - filamentY) + (sensor1X - filamentX) * (sensor1X - filamentX));
-            double len0 = Math.Sqrt((l0s0.X2 - l0s0.X1) * (l0s0.X2 - l0s0.X1) + (l0s0.Y2 - l0s0.Y1) * (l0s0.Y2 - l0s0.Y1));
-            double len1 = Math.Sqrt((l0s1.X2 - l0s1.X1) * (l0s1.X2 - l0s1.X1) + (l0s1.Y2 - l0s1.Y1) * (l0s1.Y2 - l0s1.Y1));
-
-            // Sensor 0
-            l0s0.X2 = l0s0.X2 + (l0s0.X2 - l0s0.X1) / len0 * dist0;
-            l0s0.Y2 = l0s0.Y2 + (l0s0.Y2 - l0s0.Y1) / len0 * dist0;
-            l1s0.X2 = l0s0.X2;
-            l1s0.Y2 = l1s0.Y2 + (l1s0.Y2 - l1s0.Y1) / len0 * dist0;
-            lms0.X2 = l0s0.X2;
-            lms0.Y2 = lms0.Y2 + (lms0.Y2 - lms0.Y1) / len0 * dist0;
-
-            // Sensor 1
-            l0s1.X2 = l0s1.X2 + (l0s1.X2 - l0s1.X1) / len1 * dist1;
-            l1s1.X2 = l1s1.X2 + (l1s1.X2 - l1s1.X1) / len1 * dist1;
-            l0s1.Y2 = l0s1.Y2 + (l0s1.Y2 - l0s1.Y1) / len1 * dist1;
-            l1s1.Y2 = l1s1.Y2 + (l1s1.Y2 - l1s1.Y1) / len1 * dist1;
-            lms1.X2 = lms1.X2 + (lms1.X2 - lms1.X1) / len1 * dist1;
-            lms1.Y2 = lms1.Y2 + (lms1.Y2 - lms1.Y1) / len1 * dist1;
-        }
-
-        private bool DetectionPossible()
-        {
-            UpdateCoords();
-            bool sensor0Hit = (l0s0.Y2 > (sensor0Y - sensor0.Height / 2)) && (l1s0.Y2 < (sensor0Y + sensor0.Height / 2)) && (sensor0X - sensor0.Width / 2 > filamentX + filament.Width / 2);
-            bool sensor1Hit = (l0s1.X2 > (sensor1X - sensor1.Width / 2)) && (l1s1.X2 < (sensor1X + sensor1.Width / 2)) && (sensor1Y + sensor1.Height / 2 < filamentY - filament.Height / 2);
-
-            if (sensor0Hit)
-            {
-                sensor0.Fill = validColor;
-            }
-            else
-            {
-                sensor0.Fill = errorColor;
-            }
-            if (sensor1Hit)
-            {
-                sensor1.Fill = validColor;
-            }
-            else
-            {
-                sensor1.Fill = errorColor;
-            }
-
-            return true;
-        }
-
         private void shape_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             source = (UIElement)sender;
@@ -299,11 +185,12 @@ namespace EdgeFinder
                 y_shape += y - y_canvas;
                 if (deltaYAllowed) Canvas.SetTop(source, y_shape);
                 y_canvas = y;
-                UpdateCoords();
-                DrawLines();
-                DetectionPossible();
-                UpdateDistances();
                 RunUserCode();
+
+                ClearOldRays();
+                RayCastSensorA();
+                RayCastSensorB();
+                UpdateDistances();
             }
         }
 
@@ -315,6 +202,7 @@ namespace EdgeFinder
 
         private void keyDown(object sender, KeyEventArgs e)
         {
+
             if (e.Key == Key.Z)
             {
                 deltaXAllowed = false;
@@ -337,62 +225,181 @@ namespace EdgeFinder
             }
         }
 
-        double xWidth, yWidth, xDist, yDist, xOffset, yOffset;
-
-        private void setValues() // No longer used
+        private void ClearOldRays()
         {
-            double sensor0edge0 = (sensor0Y + sensor0.Height / 2.0 - l0s0.Y2) / DIST_MULT;
-            double sensor0edge1 = (sensor0Y + sensor0.Height / 2.0 - l1s0.Y2) / DIST_MULT;
-
-            double sensor1edge0 = (l0s1.X2 - sensor1X + sensor1.Width / 2.0) / DIST_MULT;
-            double sensor1edge1 = (l1s1.X2 - sensor1X + sensor1.Width / 2.0) / DIST_MULT;
-
-            xWidth = Math.Abs((sensor0Y + sensor0.Height / 2.0 - l0s0.Y2) / DIST_MULT - (sensor0Y + sensor0.Height / 2.0 - l1s0.Y2) / DIST_MULT);
-            yWidth = Math.Abs((l0s1.X2 - sensor1X - sensor1.Width / 2.0) / DIST_MULT - (l1s1.X2 - sensor1X - sensor1.Width / 2.0) / DIST_MULT);
-
-            xOffset = (Canvas.GetLeft(sensor0) - (Canvas.GetLeft(sensor1) + sensor1.Width)) / DIST_MULT;
-            yOffset = -(Canvas.GetTop(sensor1) + sensor1.Height - Canvas.GetTop(sensor0)) / DIST_MULT;
-
-            double filx = Canvas.GetLeft(sensor1) + sensor1.Width;
-            filx -= l1s1.X2 - yWidth / 2.0;
-            filx /= DIST_MULT;
-            xOffset += filx;
-
-            double fily = Canvas.GetTop(sensor0) + sensor0.Height;
-            fily -= l1s0.Y2 - xWidth / 2.0;
-            fily /= DIST_MULT;
-            yOffset -= fily;
-
-
-            double dist0x0 = (filamentX - led0X) / DIST_MULT;
-            double dist0x1 = ((sensor0X - sensor0.Width / 2) - filamentX) / DIST_MULT;
-            xDist = Math.Sqrt(dist0x0 * dist0x0 + dist0x1 * dist0x1);
-
-            double dist1x0 = (led1Y - filamentY) / DIST_MULT;
-            double dist1x1 = (filamentY - (sensor1Y + sensor1.Width / 2)) / DIST_MULT;
-            yDist = Math.Sqrt(dist1x0 * dist1x0 + dist1x1 * dist1x1);
+            var lines = LayoutRoot.Children.OfType<Line>().ToList();
+            for (int i = 0; i < lines.Count; i++)
+            {
+                LayoutRoot.Children.Remove(lines[i]);
+            }
         }
 
-        SensorCoordinates A;
-        SensorCoordinates B;
-        public void SetCoordinates()
+        private void RayCastSensorA()
         {
-            double origin_x = Canvas.GetLeft(sensor0) + sensor0.Width;
-            double origin_y = Canvas.GetTop(sensor1);
+            int width = 2;
+            List<int> target_points = Enumerable.Range((int)EdgeA_0.Y + width, (int)EdgeA_1.Y - (int)EdgeA_0.Y - width - 1).ToList();
 
-            // A coordinates
-            A.LED_x = (origin_x-(Canvas.GetLeft(led0) + led0.Width / 2.0))/DIST_MULT;
-            //A.LED_y = ((Canvas.GetTop(led0) + led0.Height / 2.0) - origin_y) / DIST_MULT;
-            A.LED_y = ((Canvas.GetTop(led0)) - origin_y) / DIST_MULT;
-            A.edge_0 = (l0s0.Y2 - origin_y) / DIST_MULT;
-            A.edge_1 = (l1s0.Y2 - origin_y) / DIST_MULT;
+            bool previousIntersection = false;
+            double falling_edge = Double.NaN;
+            double rising_edge = Double.NaN;
 
-            // B coordinates
-            B.LED_x = (origin_x - (Canvas.GetLeft(led1) + led1.Width / 2.0)) / DIST_MULT;
-            //B.LED_y = ((Canvas.GetTop(led1) + led1.Height / 2.0) - origin_y) / DIST_MULT;
-            B.LED_y = ((Canvas.GetTop(led1)) - origin_y) / DIST_MULT;
-            B.edge_0 = (origin_x - l1s1.X2) / DIST_MULT;
-            B.edge_1 = (origin_x - l0s1.X2) / DIST_MULT;
+            foreach (var t in target_points)
+            {
+                var target = new Point(EdgeA_0.X, t);
+                var dx = target.X - LEDA.X;
+                var dy = target.Y - LEDA.Y;
+                var slope = dy / dx;
+                var points = new List<Point>();
+
+                for (double x = LEDA.X; x < EdgeA_0.X; x++)
+                {
+                    double y = slope * (x - LEDA.X) + LEDA.Y;
+                    points.Add(new Point(x, y));
+                }
+
+                bool intersects_filament = false;
+                foreach (var point in points)
+                {
+                    if (Graphics.CircleContainsPoint(filament, point))
+                    {
+                        intersects_filament = true;
+                        var ray = new Line();
+                        ray.X1 = LEDA.X;
+                        ray.Y1 = LEDA.Y;
+                        ray.X2 = point.X;
+                        ray.Y2 = point.Y;
+                        // Set Line's width and color
+                        SolidColorBrush redBrush = new SolidColorBrush();
+                        redBrush.Color = Colors.Red;
+                        redBrush.Opacity = 0.1;
+                        ray.StrokeThickness = width * 2;
+                        ray.Stroke = redBrush;
+                        LayoutRoot.Children.Add(ray);
+                        break;
+                    }
+                }
+
+                // Falling edge detection
+                if (!previousIntersection && intersects_filament)
+                {
+                    falling_edge = t;
+                    EdgeADetected_0 = new Point(EdgeA_0.X, falling_edge);
+                }
+                // Rising edge detection
+                if (!intersects_filament && previousIntersection)
+                {
+                    rising_edge = t - 1;
+                    EdgeADetected_1 = new Point(EdgeA_0.X, rising_edge);
+                }
+
+                if (!intersects_filament)
+                {
+                    SolidColorBrush redBrush = new SolidColorBrush();
+                    redBrush.Color = Colors.Red;
+                    var ray = new Line();
+                    ray.X1 = LEDA.X;
+                    ray.Y1 = LEDA.Y;
+                    ray.X2 = EdgeA_0.X;
+                    ray.Y2 = t;
+                    // Set Line's width and color
+                    ray.StrokeThickness = width * 2;
+                    redBrush.Opacity = 0.1;
+                    ray.Stroke = redBrush;
+                    LayoutRoot.Children.Add(ray);
+                }
+                previousIntersection = intersects_filament;
+
+            }
+
+            if (!Double.IsNaN(rising_edge) && !Double.IsNaN(falling_edge))
+            {
+                widthA = (rising_edge - falling_edge);
+            }
         }
+
+        private void RayCastSensorB()
+        {
+            bool previousIntersection = false;
+            double falling_edge = Double.NaN;
+            double rising_edge = Double.NaN;
+
+            int width = 2;
+            List<int> target_points = Enumerable.Range((int)EdgeB_0.X + width, (int)EdgeB_1.X - (int)EdgeB_0.X - width - 1).ToList();
+            foreach (var t in target_points)
+            {
+                var target = new Point(t, EdgeB_0.Y);
+                var dx = target.X - LEDB.X;
+                var dy = target.Y - LEDB.Y;
+                var slope = dx / dy;
+                var points = new List<Point>();
+
+                for (double y = LEDB.Y; y > EdgeB_0.Y; y--)
+                {
+                    double x = (slope * (y - LEDB.Y) + LEDB.X);
+                    points.Add(new Point(x, y));
+                }
+
+                bool intersects_filament = false;
+                foreach (var point in points)
+                {
+                    if (Graphics.CircleContainsPoint(filament, point))
+                    {
+                        intersects_filament = true;
+                        var ray = new Line();
+                        ray.X1 = LEDB.X;
+                        ray.Y1 = LEDB.Y;
+                        ray.X2 = point.X;
+                        ray.Y2 = point.Y;
+                        // Set Line's width and color
+                        SolidColorBrush redBrush = new SolidColorBrush();
+                        redBrush.Color = Colors.Red;
+                        redBrush.Opacity = 0.1;
+                        ray.StrokeThickness = width * 2;
+                        ray.Stroke = redBrush;
+                        LayoutRoot.Children.Add(ray);
+                        break;
+                    }
+                }
+
+                // Falling edge detection
+                if (!previousIntersection && intersects_filament)
+                {
+                    falling_edge = t;
+                    EdgeBDetected_0 = new Point(falling_edge, EdgeB_0.Y);
+                }
+                // Rising edge detection
+                if (!intersects_filament && previousIntersection)
+                {
+                    rising_edge = t - 1;
+                    EdgeBDetected_1 = new Point(rising_edge, EdgeB_0.Y);
+                }
+
+                if (!intersects_filament)
+                {
+                    SolidColorBrush redBrush = new SolidColorBrush();
+                    redBrush.Color = Colors.Red;
+                    redBrush.Opacity = 0.1;
+                    var ray = new Line();
+                    ray.X1 = LEDB.X;
+                    ray.Y1 = LEDB.Y;
+                    ray.X2 = t;
+                    ray.Y2 = EdgeB_0.Y;
+                    // Set Line's width and color
+                    ray.StrokeThickness = width * 2;
+                    ray.Stroke = redBrush;
+                    LayoutRoot.Children.Add(ray);
+                }
+                previousIntersection = intersects_filament;
+
+                if (!Double.IsNaN(rising_edge) && !Double.IsNaN(falling_edge))
+                {
+                    widthB = (rising_edge - falling_edge);
+                }
+            }
+        }
+
     }
 }
+
+// if falling edge, set edgeA_0 = pos
+// if rising edge, set edgeA_1 = pos

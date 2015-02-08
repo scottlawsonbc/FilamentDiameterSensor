@@ -26,17 +26,13 @@ namespace EdgeFinder
 
 namespace X
 {
-<<<<<<< HEAD
-
 public class DiameterCalculator
 {
     public double ComputeDiameter(double LEDA_x, double LEDA_y,
                                   double LEDB_x, double LEDB_y,
                                   double edgeA_0, double edgeA_1,
                                   double edgeB_0, double edgeB_1)
-=======
     public class DiameterCalculator
->>>>>>> origin/master
     {
         // Location of the center of filament
         double filament_x = (edgeB_0 + edgeB_1) / 2.0;
@@ -103,7 +99,6 @@ public class DiameterCalculator
         private void RunUserCode()
         {
             CheckCodeExists();
-            SetCoordinates();
             var lastModified = System.IO.File.GetLastWriteTime(CODE_PATH);
 
             // Check if the code has been modified since the last compilation
@@ -184,16 +179,17 @@ public class DiameterCalculator
             try
             {
                 MethodInfo mi = o.GetType().GetMethod("ComputeDiameter");
-                return (double)mi.Invoke(o, new object[] { A.LED_x, A.LED_y,
-                                                           B.LED_x, B.LED_y,
-                                                           A.edge_0, A.edge_1,
-                                                           B.edge_0, B.edge_1});
+                return (double)mi.Invoke(o, new object[] { EdgeA_0.X - LEDA.X, LEDA.Y - EdgeB_0.Y,
+                                                           EdgeA_0.X - LEDB.X, LEDB.Y - EdgeB_0.Y,                                
+                                                           EdgeADetected_0.Y - EdgeB_0.Y, EdgeADetected_1.Y - EdgeB_0.Y,
+                                                           EdgeA_0.X - EdgeBDetected_0.X, EdgeA_0.X - EdgeBDetected_1.X});
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message, "Code compiled, but could not executed");
+                MessageBox.Show(e.Message, "Code compiled, but could not be executed");
                 return 0.0;
             }
+            return 2.0;
         }
     }
 }

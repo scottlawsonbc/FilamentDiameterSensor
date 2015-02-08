@@ -15,7 +15,7 @@
                 </StackPanel>
                 <!-- Distances -->
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Distances:" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
+                    <TextBlock Text="To filament:" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
                     <TextBlock x:Name="distances0Text"  Text="35.00 mm, 15.00 mm" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
                 </StackPanel>
                 <!-- Total distance -->
@@ -43,7 +43,7 @@
                 </StackPanel>
                 <!-- Distances -->
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Distances:" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
+                    <TextBlock Text="To filament:" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
                     <TextBlock x:Name="distances1Text"  Text="35.00 mm, 15.00 mm" FontFamily="Segoe UI" FontSize="16" Margin="5" DockPanel.Dock="Top"/>
                 </StackPanel>
                 <!-- Total distance -->
