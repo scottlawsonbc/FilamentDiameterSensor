@@ -26,13 +26,13 @@ namespace EdgeFinder
 
 namespace X
 {
+
 public class DiameterCalculator
 {
     public double ComputeDiameter(double LEDA_x, double LEDA_y,
                                   double LEDB_x, double LEDB_y,
                                   double edgeA_0, double edgeA_1,
                                   double edgeB_0, double edgeB_1)
-    public class DiameterCalculator
     {
         // Location of the center of filament
         double filament_x = (edgeB_0 + edgeB_1) / 2.0;
@@ -42,12 +42,12 @@ public class DiameterCalculator
         double LEDA_to_filament = LEDA_x - filament_x;
         double A_diameter = (LEDA_to_filament * (edgeA_1 - edgeA_0)) / LEDA_x;
 
-        // Diameter for B
-        double LEDB_to_filament = LEDB_y - filament_y;
+        // Diameter for B fc
+        double LEDB_to_filament = filament_y - LEDB_y;
         double B_diameter = (LEDB_to_filament * (edgeB_1 - edgeB_0)) / LEDB_y;
 
         // Return the mean of the two diameters
-        return (A_diameter + B_diameter) / 2.0;
+        return (A_diameter + B_diameter) / 20.0;
     }
 }
 }
