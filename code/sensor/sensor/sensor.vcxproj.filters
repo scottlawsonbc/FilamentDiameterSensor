@@ -121,6 +121,9 @@
     <ClCompile Include="source\opamp.c">
       <Filter>Source files</Filter>
     </ClCompile>
+    <ClCompile Include="geometry.c">
+      <Filter>Source files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile" />
@@ -260,6 +263,9 @@
     </ClInclude>
     <ClInclude Include="source\opamp.h">
       <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="geometry.h">
+      <Filter>Source files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
