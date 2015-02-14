@@ -39,6 +39,16 @@ inline uint16_t TSL_AnalogRead(void)
 	return ADC_GetConversionValue(ADC1);                    /* Return the ADC result */
 }
 
+inline void TSL_DualAnalogRead(uint32_t *ADC1_Value, uint32_t *ADC2_Value)
+{
+	ADC_StartConversion(ADC1);
+	while(ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET); /* Wait for ADC to be ready */
+	*ADC1_Value = ADC_GetDualModeConversionValue(ADC1);	   /* Both ADC values stored in single uint32_t */
+	*ADC2_Value = *ADC1_Value & 0x0000FFFF;				   /* ADC2 value stored in lower 16 bits */
+	*ADC1_Value = *ADC1_Value & 0xFFFF0000;				   /* ADC1 value stored in upper 16 bits */
+}
+
+
 void TSL_GPIO_Configuration(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -55,23 +65,24 @@ void TSL_GPIO_Configuration(void)
 	GPIO_WriteBit(GPIOE, TSL_SERIAL_PIN, Bit_RESET);
 }
 
-void TSL_ADC_Configuration(void)
+void TSL_ADC1_Configuration(void)
 {
 	ADC_InitTypeDef       ADC_InitStructure;
 	ADC_CommonInitTypeDef ADC_CommonInitStructure;
 	GPIO_InitTypeDef      GPIO_InitStructure;
 
-	RCC_ADCCLKConfig(RCC_ADC12PLLCLK_Div2);             /* Set ADC clock */
+	RCC_ADCCLKConfig(RCC_ADC12PLLCLK_Div1);             /* Set ADC clock */
 	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_ADC12, ENABLE); /* Enable ADC1 clock */
-	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOC, ENABLE); /* GPIOC Periph clock enable */
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE); /* GPIOA Periph clock enable */
 
-	GPIO_InitStructure.GPIO_Pin  = TSL_ANALOG_INPUT_PIN;
+	GPIO_InitStructure.GPIO_Pin  = TSL_ADC1_INPUT_PIN; /* Connect the ADC to PINA and PINB */
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	GPIO_Init(GPIOC, &GPIO_InitStructure);
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
 	ADC_StructInit(&ADC_InitStructure);
-	while(ADC_GetCalibrationStatus(ADC1) != RESET );
-	ADC_CommonInitStructure.ADC_Mode             = ADC_Mode_Independent;                                                                    
+	ADC_VoltageRegulatorCmd(ADC1, ENABLE);
+	while(ADC_GetCalibrationStatus(ADC1) != RESET);
+	ADC_CommonInitStructure.ADC_Mode             = ADC_Mode_RegSimul;                                                                    
 	ADC_CommonInitStructure.ADC_Clock            = ADC_Clock_AsynClkMode;                    
 	ADC_CommonInitStructure.ADC_DMAAccessMode    = ADC_DMAAccessMode_Disabled;             
 	ADC_CommonInitStructure.ADC_DMAMode          = ADC_DMAMode_OneShot;                  
@@ -86,10 +97,48 @@ void TSL_ADC_Configuration(void)
 	ADC_InitStructure.ADC_AutoInjMode            = ADC_AutoInjec_Disable;  
 	ADC_InitStructure.ADC_NbrOfRegChannel        = 1;
 	ADC_Init(ADC1, &ADC_InitStructure);
-	ADC_RegularChannelConfig(ADC1, ADC_Channel_7, 1, ADC_SampleTime_7Cycles5);
+	ADC_RegularChannelConfig(ADC1, TSL_ADC1_CHANNEL, 1, ADC_SampleTime_1Cycles5);
 	ADC_Cmd(ADC1, ENABLE);
 
 	while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_RDY)); /* Wait for ADC to be ready */
+}
+
+void TSL_ADC2_Configuration(void)
+{
+	ADC_InitTypeDef       ADC_InitStructure;
+	ADC_CommonInitTypeDef ADC_CommonInitStructure;
+	GPIO_InitTypeDef      GPIO_InitStructure;
+
+	RCC_ADCCLKConfig(RCC_ADC12PLLCLK_Div1);             /* Set ADC clock */
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_ADC12, ENABLE); /* Enable ADC1 clock */
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE); /* GPIOA Periph clock enable */
+
+	GPIO_InitStructure.GPIO_Pin  = TSL_ADC2_INPUT_PIN; /* Connect the ADC to PINA and PINB */
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+	ADC_StructInit(&ADC_InitStructure);
+	ADC_VoltageRegulatorCmd(ADC2, ENABLE);
+	while(ADC_GetCalibrationStatus(ADC2) != RESET );
+	ADC_CommonInitStructure.ADC_Mode             = ADC_Mode_RegSimul;                                                                    
+	ADC_CommonInitStructure.ADC_Clock            = ADC_Clock_AsynClkMode;                    
+	ADC_CommonInitStructure.ADC_DMAAccessMode    = ADC_DMAAccessMode_Disabled;             
+	ADC_CommonInitStructure.ADC_DMAMode          = ADC_DMAMode_OneShot;                  
+	ADC_CommonInitStructure.ADC_TwoSamplingDelay = 0;          
+	ADC_CommonInit(ADC2, &ADC_CommonInitStructure);
+	ADC_InitStructure.ADC_ContinuousConvMode     = ADC_ContinuousConvMode_Disable;
+	ADC_InitStructure.ADC_Resolution             = ADC_Resolution_12b; 
+	ADC_InitStructure.ADC_ExternalTrigConvEvent  = ADC_ExternalTrigConvEvent_0;         
+	ADC_InitStructure.ADC_ExternalTrigEventEdge  = ADC_ExternalTrigEventEdge_None;
+	ADC_InitStructure.ADC_DataAlign              = ADC_DataAlign_Right;
+	ADC_InitStructure.ADC_OverrunMode            = ADC_OverrunMode_Disable;   
+	ADC_InitStructure.ADC_AutoInjMode            = ADC_AutoInjec_Disable;  
+	ADC_InitStructure.ADC_NbrOfRegChannel        = 1;
+	ADC_Init(ADC2, &ADC_InitStructure);
+	ADC_RegularChannelConfig(ADC2, TSL_ADC2_CHANNEL, 1, ADC_SampleTime_1Cycles5);
+	ADC_Cmd(ADC2, ENABLE);
+
+	while(!ADC_GetFlagStatus(ADC2, ADC_FLAG_RDY)); /* Wait for ADC to be ready */
 }
 
 void TSL_Sensor_Init(void)
@@ -112,7 +161,8 @@ void TSL_Sensor_Init(void)
 void TSL_Init(void)
 {
 	TSL_GPIO_Configuration();
-	TSL_ADC_Configuration();
+	TSL_ADC1_Configuration();
+	TSL_ADC2_Configuration();
 	TSL_Sensor_Init();
 }
 

@@ -6,6 +6,9 @@
 #define TSL1401CL_H
 #include <stdint.h>
 #include <stm32f30x_gpio.h>
+#include <stm32f30x_adc.h>
+#include <stm32f30x.h>
+
 
 /* Sensor parameters */
 #define TSL_PIXEL_COUNT             (128U)
@@ -20,11 +23,14 @@
 #define TSL_SERIAL_PIN             (GPIO_Pin_11)
 #define TSL_CLOCK_PIN              (GPIO_Pin_9)
 
-/* Analog pins connected to GPIOC */
-#define TSL_ANALOG_INPUT_PIN       (GPIO_Pin_1)
+/* ADC1 connected to GPIOA */
+#define TSL_ADC1_INPUT_PIN         (GPIO_Pin_1)
+#define TSL_ADC1_CHANNEL		   (ADC_Channel_2)
+/* ADC2 connected to GPIOA */
+#define TSL_ADC2_INPUT_PIN		   (GPIO_Pin_4)
+#define TSL_ADC2_CHANNEL           (ADC_Channel_1)
 
 extern void TSL_Init();
 extern void TSL_MeasurePixels(int32_t *pixels);
-
 
 #endif
