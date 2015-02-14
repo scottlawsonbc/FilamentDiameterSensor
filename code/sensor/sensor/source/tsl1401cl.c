@@ -39,13 +39,13 @@ inline uint16_t TSL_AnalogRead(void)
 	return ADC_GetConversionValue(ADC1);                    /* Return the ADC result */
 }
 
-inline void TSL_DualAnalogRead(uint32_t *ADC1_Value, uint32_t *ADC2_Value)
+inline void TSL_DualAnalogRead(int32_t *ADC1_Value, int32_t *ADC2_Value)
 {
 	ADC_StartConversion(ADC1);
 	while(ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET); /* Wait for ADC to be ready */
 	*ADC1_Value = ADC_GetDualModeConversionValue(ADC1);	   /* Both ADC values stored in single uint32_t */
-	*ADC2_Value = *ADC1_Value & 0x0000FFFF;				   /* ADC2 value stored in lower 16 bits */
-	*ADC1_Value = *ADC1_Value & 0xFFFF0000;				   /* ADC1 value stored in upper 16 bits */
+	*ADC2_Value = (uint32_t)(((uint32_t)*ADC1_Value) & 0x0000FFFF);				   /* ADC2 value stored in lower 16 bits */
+	*ADC1_Value = (uint32_t)(((uint32_t)*ADC1_Value) & 0xFFFF0000);				   /* ADC1 value stored in upper 16 bits */
 }
 
 
@@ -166,7 +166,7 @@ void TSL_Init(void)
 	TSL_Sensor_Init();
 }
 
-void TSL_MeasurePixels(int32_t *pixels)
+void TSL_MeasurePixels(int32_t *x_pixels, int32_t *y_pixels)
 {
 	uint16_t i, j;
 	/* Clear indeterminant data from the sensor */
@@ -182,7 +182,8 @@ void TSL_MeasurePixels(int32_t *pixels)
 	TSL_StartOutputCycle();
 	for (i = 0; i < TSL_PIXEL_COUNT; i++)
 	{
-		pixels[i] = TSL_AnalogRead();
+		TSL_DualAnalogRead(&(x_pixels[i]), &(y_pixels[i]));
+		//pixels[i] = TSL_AnalogRead();
 		TSL_ClockPulse();
 	}
 

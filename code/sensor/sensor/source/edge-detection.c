@@ -91,7 +91,7 @@ inline float DET_SubpixelEdge(int32_t x[], uint16_t edgeIndex)
 	return (left-right)/(2.0f*(left+right-2.0f*center))+((float)edgeIndex); 
 }
 
-float DET_MicronsBetweenEdges(int32_t x[])
+EdgeData DET_MicronsBetweenEdges(int32_t x[])
 {
 	/* Approximate a convolution with a gaussian kernel derivative to reduce noise */  
 	DET_ApproximateGaussianConvolution(x);
@@ -101,11 +101,15 @@ float DET_MicronsBetweenEdges(int32_t x[])
 
 	/* The two edges are the extrema of the function */
 	uint16_t minEdge, maxEdge;
+	EdgeData edge_data;
 	DET_MinMaxIndex(x, &minEdge, &maxEdge);
 	float subpixelMinEdge = DET_SubpixelEdge(x, minEdge);
 	float subpixelMaxEdge = DET_SubpixelEdge(x, maxEdge);
 	float microns = (subpixelMinEdge - subpixelMaxEdge)*(float)TSL_PIXEL_SPACING_NM/1000.0f;
-	return microns;
+	edge_data.E0 = subpixelMinEdge;
+	edge_data.E1 = subpixelMaxEdge;
+	edge_data.Width = microns;
+	return edge_data;
 }
 //
 ///* Detects the edges and returns the distance in pixels between them

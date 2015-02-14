@@ -10,10 +10,12 @@
 #include "edge-detection.h"
 #include "led-bar.h"
 #include "opamp.h"
+#include "geometry.h"
 
 #define USART1_BAUDRATE (115200U)
 char buffer[60];
-int32_t intPixels[TSL_PIXEL_COUNT];
+int32_t xPixels[TSL_PIXEL_COUNT];
+int32_t yPixels[TSL_PIXEL_COUNT];
 
 int main()
 {
@@ -22,31 +24,38 @@ int main()
 	TSL_Init();
 	LED_Init();
 	
-	//PGA_Init();
-	//DAC_Setup();
-	
-	//LED_Write(0, Bit_SET);
-	//LED_Write(1, Bit_SET);
-	LED_Write(2, Bit_SET);
-	//LED_Write(3, Bit_SET);
-	//LED_Write(4, Bit_SET);
-	float sum = 0;
+	// Turn on the sensor LEDs
+	LED_Write(0, Bit_SET);
+	LED_Write(1, Bit_SET);
+
 
 	while(1)
 	{
-		uint8_t i;
-		sum = 0;
-		for (i=0; i<100;i++)
+		int i;
+	double sum = 0.0;
+
+		for (i = 0; i < 10; i++)
 		{
-			TSL_MeasurePixels(intPixels);
-			float dist = DET_MicronsBetweenEdges(intPixels);	
-			sum += dist;
+			TSL_MeasurePixels(xPixels, yPixels);
+			EdgeData resultX = DET_MicronsBetweenEdges(xPixels);
+			EdgeData resultY = DET_MicronsBetweenEdges(yPixels);
+
+			resultX.E0 *= 62.5f * 1000.0f;
+			resultX.E1 *= 62.5f * 1000.0f;
+			resultX.Width *= 1000.0f;
+
+			resultY.E0 *= 62.5f * 1000.0f;
+			resultY.E1 *= 62.5f * 1000.0f;
+			resultY.Width *= 1000.0f;
+
+			float total = GEO_Filament_Diameter_MM(resultX, resultY);
+			sum += total;
 		}
-		sum /= 100.0f;
-		sprintf(buffer, "%f", sum);
+		sprintf(buffer, "Diameter: %f", ((float)sum)*100.0f);
 		USART1_SendLine(buffer);
 	}
 }
+
 //****************************************************************************
 
 #ifdef  USE_FULL_ASSERT

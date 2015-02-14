@@ -9,7 +9,6 @@
 #include <stm32f30x_adc.h>
 #include <stm32f30x.h>
 
-
 /* Sensor parameters */
 #define TSL_PIXEL_COUNT             (128U)
 #define TSL_PIXEL_SPACING_NM        (63500U)
@@ -17,7 +16,7 @@
 /* Timing parameters */
 #define TSL_CHARGE_TRANSFER_TIME_US (20U)
 #define TSL_SENSOR_DELAY_US         (TSL_CHARGE_TRANSFER_TIME_US + 10U)
-#define TSL_CLOCK_DELAY_US          (0U)
+#define TSL_CLOCK_DELAY_US          (100U)
 
 /* Digital pins connected to GPIOE */
 #define TSL_SERIAL_PIN              (GPIO_Pin_11 | GPIO_Pin_8) 
@@ -31,6 +30,7 @@
 #define TSL_ADC2_CHANNEL            (ADC_Channel_1)
 
 extern void TSL_Init();
-extern void TSL_MeasurePixels(int32_t *pixels);
+//extern void TSL_MeasurePixels(int32_t *pixels);
+extern void TSL_MeasurePixels(int32_t *x_pixels, int32_t *y_pixels);
 
 #endif
