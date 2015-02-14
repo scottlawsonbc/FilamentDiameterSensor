@@ -23,7 +23,7 @@ inline float GEO_Averaged_Diameter(float diameter_A, float diameter_B)
 
 /* Returns the filament diameter
 */
-extern float GEO_Filament_Diameter(float edge_position_a[], float edge_position_b[])
+float GEO_Filament_Diameter(float edge_position_a[], float edge_position_b[])
 {
 	GEO_Add_Sensor_Offsets(edge_position_a, edge_position_b);
 
