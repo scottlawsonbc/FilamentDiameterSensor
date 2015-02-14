@@ -5,6 +5,7 @@
 
 #define LED_COUNT (5U)
 
+/* Connected to GPIOD */
 #define LED_0_PIN GPIO_Pin_9
 #define LED_1_PIN GPIO_Pin_8
 #define LED_2_PIN GPIO_Pin_11
