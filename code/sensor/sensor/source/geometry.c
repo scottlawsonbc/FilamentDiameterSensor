@@ -32,8 +32,8 @@ float GEO_Filament_Diameter(float edge_position_a[], float edge_position_b[])
 	float x_b1 = edge_position_b[1] - GEO_B_LED_Y_MM;
 	float x_b0 = edge_position_b[0] - GEO_B_LED_X_MM;
 
-	float X_a = (x_a1 + x_a0 == 0) ? 0 : GEO_A_LED_X_MM * tan(0.5 * (atan2(x_a1, GEO_A_LED_X_MM) + atan2(x_a0, GEO_A_LED_X_MM)));
-	float X_b = (x_b1 + x_b0 == 0) ? 0 : GEO_B_LED_Y_MM * tan(0.5 * (atan2(x_b1, GEO_B_LED_Y_MM) + atan2(x_b0, GEO_B_LED_Y_MM)));
+	float X_a = (x_a1 + x_a0 == 0) ? 0 : GEO_A_LED_X_MM * tanf(0.5 * (atan2(x_a1, GEO_A_LED_X_MM) + atan2f(x_a0, GEO_A_LED_X_MM)));
+	float X_b = (x_b1 + x_b0 == 0) ? 0 : GEO_B_LED_Y_MM * tanf(0.5 * (atan2(x_b1, GEO_B_LED_Y_MM) + atan2f(x_b0, GEO_B_LED_Y_MM)));
 
 	float P_a = X_a + GEO_A_LED_Y_MM;
 	float P_b = X_b + GEO_B_LED_X_MM;
@@ -41,8 +41,8 @@ float GEO_Filament_Diameter(float edge_position_a[], float edge_position_b[])
 	float fil_x = (GEO_A_LED_X_MM * (GEO_B_LED_X_MM * P_a - P_a * P_b + GEO_B_LED_Y_MM * P_b)) / (GEO_A_LED_X_MM * GEO_B_LED_Y_MM - P_a * P_b - GEO_A_LED_Y_MM * GEO_B_LED_X_MM + GEO_A_LED_Y_MM * P_b + GEO_B_LED_X_MM * P_a);
 	float fil_y = (GEO_B_LED_Y_MM * (GEO_A_LED_X_MM * P_a - P_a * P_b + GEO_A_LED_Y_MM * P_b)) / (GEO_A_LED_X_MM * GEO_B_LED_Y_MM - P_a * P_b - GEO_A_LED_Y_MM * GEO_B_LED_X_MM + GEO_A_LED_Y_MM * P_b + GEO_B_LED_X_MM * P_a);
 
-	float dia_a = 2.0 / 10.0 * sqrt((fil_y - GEO_A_LED_Y_MM) * (fil_y - GEO_A_LED_Y_MM) + (GEO_A_LED_X_MM - fil_x) * (GEO_A_LED_X_MM - fil_x)) * sin(0.5 * (atan2(x_a1, GEO_A_LED_X_MM) - atan2(x_a0, GEO_A_LED_X_MM)));
-	float dia_b = 2.0 / 10.0 * sqrt((fil_x - GEO_B_LED_X_MM) * (fil_x - GEO_B_LED_X_MM) + (GEO_B_LED_Y_MM - fil_y) * (GEO_B_LED_Y_MM - fil_y)) * sin(0.5 * (atan2(x_b1, GEO_B_LED_Y_MM) - atan2(x_b0, GEO_B_LED_Y_MM)));
+	float dia_a = 2.0 / 10.0 * sqrtf((fil_y - GEO_A_LED_Y_MM) * (fil_y - GEO_A_LED_Y_MM) + (GEO_A_LED_X_MM - fil_x) * (GEO_A_LED_X_MM - fil_x)) * sinf(0.5 * (atan2f(x_a1, GEO_A_LED_X_MM) - atan2f(x_a0, GEO_A_LED_X_MM)));
+	float dia_b = 2.0 / 10.0 * sqrtf((fil_x - GEO_B_LED_X_MM) * (fil_x - GEO_B_LED_X_MM) + (GEO_B_LED_Y_MM - fil_y) * (GEO_B_LED_Y_MM - fil_y)) * sinf(0.5 * (atan2f(x_b1, GEO_B_LED_Y_MM) - atan2f(x_b0, GEO_B_LED_Y_MM)));
 
 	return GEO_Averaged_Diameter(dia_a, dia_b);
 }
