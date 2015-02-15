@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <math.h>
+#include <stdbool.h>
 #include "tsl1401cl.h"
 #include "edge-detection.h"
 #include "dac.h"
@@ -81,6 +82,9 @@ void DET_MinMaxIndex(const int32_t x[], uint16_t *minIndex, uint16_t *maxIndex)
 	}
 }
 
+/* Performs quadratic interpolation on the given edge pixel and returns a floating point
+ * estimate of subpixel edge position 
+ */
 inline float DET_SubpixelEdge(int32_t x[], uint16_t edgeIndex)
 {
 	float left, center, right;
@@ -100,12 +104,22 @@ EdgeData DET_MicronsBetweenEdges(int32_t x[])
 	DET_FastFiniteDifferences(x);
 
 	/* The two edges are the extrema of the function */
+	EdgeData edge_data = {0,0,0,true};
 	uint16_t minEdge, maxEdge;
-	EdgeData edge_data;
 	DET_MinMaxIndex(x, &minEdge, &maxEdge);
+
+	// Determine edge validity
+	if ((minEdge >= maxEdge) || 
+	   ((maxEdge-minEdge)>DET_MAX_VALID_PIXEL_WIDTH) || 
+	   ((maxEdge-minEdge)<DET_MIN_VALID_PIXEL_WIDTH))
+	{
+		edge_data.IsValid = false;
+		return edge_data;
+	}
+
 	float subpixelMinEdge = DET_SubpixelEdge(x, minEdge);
 	float subpixelMaxEdge = DET_SubpixelEdge(x, maxEdge);
-	float microns = (subpixelMinEdge - subpixelMaxEdge)*(float)TSL_PIXEL_SPACING_NM/1000.0f;
+	float microns = (subpixelMaxEdge-subpixelMinEdge)*(float)TSL_PIXEL_SPACING_NM/1000.0f;
 	edge_data.E0 = subpixelMinEdge;
 	edge_data.E1 = subpixelMaxEdge;
 	edge_data.Width = microns;
