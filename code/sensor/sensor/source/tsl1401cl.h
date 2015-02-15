@@ -12,11 +12,12 @@
 /* Sensor parameters */
 #define TSL_PIXEL_COUNT             (128U)
 #define TSL_PIXEL_SPACING_NM        (63500U)
+#define TSL_SENSOR_WIDTH_NM         (TSL_PIXEL_SPACING_NM*TSL_PIXEL_COUNT)
 
 /* Timing parameters */
 #define TSL_CHARGE_TRANSFER_TIME_US (20U)
 #define TSL_SENSOR_DELAY_US         (TSL_CHARGE_TRANSFER_TIME_US + 10U)
-#define TSL_CLOCK_DELAY_US          (100U)
+#define TSL_CLOCK_DELAY_US          (80U)
 
 /* Digital pins connected to GPIOE */
 #define TSL_SERIAL_PIN              (GPIO_Pin_11 | GPIO_Pin_8) 
