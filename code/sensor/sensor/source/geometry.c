@@ -18,7 +18,7 @@ void GEO_Add_Sensor_Offsets(EdgeData* edge_position_a, EdgeData* edge_position_b
 	edge_position_b->E1 =  GEO_B_SENSOR_OFFSET_MM + sensor_width_mm - edge_position_b->E1; /* Referenced from far end of sensor */
 }
 
-/* Returns an averaged diameter based on the two perpedicular widths
+/* Returns an averaged diameter based on the two perpendicular widths
 */
 inline float GEO_Averaged_Diameter(float diameter_A, float diameter_B)
 {

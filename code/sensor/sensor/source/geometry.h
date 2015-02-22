@@ -12,7 +12,7 @@
 #define GEO_A_SENSOR_OFFSET_MM 11.0f
 #define GEO_B_SENSOR_OFFSET_MM 11.0f
 
-/* Filament diamater calculations for 2-axis sensor */
+/* Filament diameter calculations for 2-axis sensor */
 extern float GEO_Filament_Diameter_MM(EdgeData edge_position_a, EdgeData edge_position_b);
 
 #endif
