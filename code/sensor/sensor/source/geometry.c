@@ -43,7 +43,7 @@ float GEO_Filament_Diameter_MM(EdgeData edge_position_a, EdgeData edge_position_
 	
 	float x_a1 = edge_position_a.E1 - GEO_A_LED_Y_MM;
 	float x_a0 = edge_position_a.E0 - GEO_A_LED_Y_MM;
-	float x_b1 = edge_position_b.E1 - GEO_B_LED_Y_MM;
+	float x_b1 = edge_position_b.E1 - GEO_B_LED_X_MM;
 	float x_b0 = edge_position_b.E0 - GEO_B_LED_X_MM;
 
 	float X_a = (x_a1 + x_a0 == 0) ? 0 : GEO_A_LED_X_MM * tanf(0.5 * (atan2(x_a1, GEO_A_LED_X_MM) + atan2f(x_a0, GEO_A_LED_X_MM)));
@@ -70,7 +70,7 @@ float GEO_Filament_Diameter_MM(EdgeData edge_position_a, EdgeData edge_position_
 //
 //	float x_a1 = edge_position_a.E1 - GEO_A_LED_Y_MM;
 //	float x_a0 = edge_position_a.E0 - GEO_A_LED_Y_MM;
-//	float x_b1 = edge_position_b.E1 - GEO_B_LED_Y_MM;
+//	float x_b1 = edge_position_b.E1 - GEO_B_LED_X_MM;
 //	float x_b0 = edge_position_b.E0 - GEO_B_LED_X_MM;
 //
 //	float X_a = (x_a1 + x_a0 == 0) ? 0 : GEO_A_LED_X_MM * tanf(0.5 * (atan2(x_a1, GEO_A_LED_X_MM) + atan2f(x_a0, GEO_A_LED_X_MM)));
@@ -97,7 +97,7 @@ float GEO_Filament_Diameter_MM(EdgeData edge_position_a, EdgeData edge_position_
 //
 //	float x_a1 = edge_position_a.E1 - GEO_A_LED_Y_MM;
 //	float x_a0 = edge_position_a.E0 - GEO_A_LED_Y_MM;
-//	float x_b1 = edge_position_b.E1 - GEO_B_LED_Y_MM;
+//	float x_b1 = edge_position_b.E1 - GEO_B_LED_X_MM;
 //	float x_b0 = edge_position_b.E0 - GEO_B_LED_X_MM;
 //
 //	float X_a = (x_a1 + x_a0 == 0) ? 0 : GEO_A_LED_X_MM * tanf(0.5 * (atan2(x_a1, GEO_A_LED_X_MM) + atan2f(x_a0, GEO_A_LED_X_MM)));
@@ -124,7 +124,7 @@ float GEO_Filament_Diameter_MM(EdgeData edge_position_a, EdgeData edge_position_
 //
 //	float x_a1 = edge_position_a[1] - GEO_A_LED_Y_MM;
 //	float x_a0 = edge_position_a[0] - GEO_A_LED_Y_MM;
-//	float x_b1 = edge_position_b[1] - GEO_B_LED_Y_MM;
+//	float x_b1 = edge_position_b[1] - GEO_B_LED_X_MM;
 //	float x_b0 = edge_position_b[0] - GEO_B_LED_X_MM;
 //
 //	float X_a = (x_a1 + x_a0 == 0) ? 0 : GEO_A_LED_X_MM * tanf(0.5 * (atan2(x_a1, GEO_A_LED_X_MM) + atan2f(x_a0, GEO_A_LED_X_MM)));
