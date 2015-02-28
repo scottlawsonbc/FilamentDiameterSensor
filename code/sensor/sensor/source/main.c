@@ -68,15 +68,6 @@ int main()
 		y_edge_sum.Width /= (float)iterations;
 
 		float diameter = GEO_Filament_Diameter_MM(x_edge_sum, y_edge_sum);
-		//sprintf(buffer, "X: %f Y: %f D: %f", (x_edge_sum.E1-x_edge_sum.E0), (y_edge_sum.E1-y_edge_sum.E0), diameter);
-		//USART1_SendLine(buffer);
-
-		sprintf(buffer, "\r\nX: E0: %fmm E1: %fmm Width: %fmm", x_edge_sum.E0, x_edge_sum.E1, x_edge_sum.Width/1000.f);
-		USART1_SendLine(buffer);
-		sprintf(buffer, "Y: E0: %fmm E1: %fmm Width: %fmm", y_edge_sum.E0, y_edge_sum.E1, y_edge_sum.Width/1000.f);
-		USART1_SendLine(buffer);
-		sprintf(buffer, "Diameter: %fmm", diameter);
-		USART1_SendLine(buffer);
 	}
 }
 

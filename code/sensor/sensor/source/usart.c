@@ -64,3 +64,17 @@ void USART1_Init(uint32_t baudRate)
 	USART_Init(USART1, &USART_InitStructure);
 	USART_Cmd(USART1, ENABLE);
 }
+
+void dprintf(const char *msg, ... )
+{
+	#if USART1_DEBUG_MESSAGES_ON
+
+	va_list argList;
+	char buffer[150];
+	va_start(argList, msg);
+	vsprintf(buffer, msg, argList);
+	va_end(argList);
+	USART1_Send(buffer);
+
+	#endif
+}
