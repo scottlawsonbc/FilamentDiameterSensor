@@ -17,7 +17,7 @@
 /* Timing parameters */
 #define TSL_CHARGE_TRANSFER_TIME_US (20U)
 #define TSL_SENSOR_DELAY_US         (TSL_CHARGE_TRANSFER_TIME_US + 10U)
-#define TSL_CLOCK_DELAY_US          (80U)
+#define TSL_CLOCK_DELAY_US          (0U)
 
 /* Digital pins connected to GPIOE */
 #define TSL_SERIAL_PIN              (GPIO_Pin_11 | GPIO_Pin_8) 

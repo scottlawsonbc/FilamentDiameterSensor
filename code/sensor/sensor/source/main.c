@@ -28,13 +28,13 @@ int main()
 	LED_Write(0, Bit_SET);
 	LED_Write(1, Bit_SET);
 
-	const int iterations = 10;
+	const int iterations = 300;
 	while(1)
 	{
 		int i;
 		EdgeData x_edge_sum = {0,0,0,1};
 		EdgeData y_edge_sum = {0,0,0,1};
-		for (i = 1; i < iterations-1; i++)
+		for (i = 1; i < iterations+1; i++)
 		{
 			TSL_MeasurePixels(xPixels, yPixels);
 			EdgeData edge_x = DET_MicronsBetweenEdges(xPixels);
