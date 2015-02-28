@@ -30,11 +30,11 @@ inline float GEO_Averaged_Diameter(float diameter_A, float diameter_B)
 */
 float GEO_Filament_Diameter_MM(EdgeData edge_position_a, EdgeData edge_position_b)
 {
-	uprintf("Edges w/o offset:\r\nX: E0: %fmm E1: %fmm\r\nY: E0: %fmm E1: %fmm", edge_position_a.E0, edge_position_a.E1, edge_position_b.E0, edge_position_b.E1);
+	uprintf("Edges w/o offset:\r\nX: E0: %fmm E1: %fmm\r\nY: E0: %fmm E1: %fmm\r\n", edge_position_a.E0, edge_position_a.E1, edge_position_b.E0, edge_position_b.E1);
 
 	GEO_Add_Sensor_Offsets(&edge_position_a, &edge_position_b);
 	
-	uprintf("Edges w/offset:\r\nX: E0: %fmm E1: %fmm\r\nY: E0: %fmm E1: %fmm", edge_position_a.E0, edge_position_a.E1, edge_position_b.E0, edge_position_b.E1);
+	uprintf("Edges w/offset:\r\nX: E0: %fmm E1: %fmm\r\nY: E0: %fmm E1: %fmm\r\n", edge_position_a.E0, edge_position_a.E1, edge_position_b.E0, edge_position_b.E1);
 	
 	float x_a1 = edge_position_a.E1 - GEO_A_LED_Y_MM;
 	float x_a0 = edge_position_a.E0 - GEO_A_LED_Y_MM;
