@@ -65,7 +65,7 @@ void USART1_Init(uint32_t baudRate)
 	USART_Cmd(USART1, ENABLE);
 }
 
-void dprintf(const char *msg, ... )
+void uprintf(const char *msg, ... )
 {
 	#if USART1_DEBUG_MESSAGES_ON
 

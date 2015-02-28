@@ -12,6 +12,6 @@ extern void USART1_Init(uint32_t baudRate);
 extern void USART1_Send(char *data);
 extern void USART1_SendLine(char *data);
 
-extern void dprintf(const char *msg, ... );
+extern void uprintf(const char *msg, ... );
 
 #endif
