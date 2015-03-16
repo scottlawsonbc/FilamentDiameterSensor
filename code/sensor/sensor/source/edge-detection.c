@@ -109,7 +109,8 @@ EdgeData DET_MicronsBetweenEdges(int32_t x[])
 	DET_MinMaxIndex(x, &minEdge, &maxEdge);
 
 	// Determine edge validity
-	if ((minEdge >= maxEdge) || 
+	if ((minEdge >= maxEdge) ||
+	   (minEdge == 0) || (maxEdge == TSL_PIXEL_COUNT-1) ||
 	   ((maxEdge-minEdge)>DET_MAX_VALID_PIXEL_WIDTH) || 
 	   ((maxEdge-minEdge)<DET_MIN_VALID_PIXEL_WIDTH))
 	{
