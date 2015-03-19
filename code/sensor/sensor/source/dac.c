@@ -1,10 +1,10 @@
-#include "tsl1401cl.h"
 #include "dac.h"
+#include "tsl1401cl.h"
+#include "stm32f30x_rcc.h"
+#include "stm32f30x_tim.h"
 #include "stm32f30x_dac.h"
 #include "stm32f30x_dma.h"
 #include "stm32f30x_gpio.h"
-#include "stm32f30x_rcc.h"
-#include "stm32f30x_tim.h"
 #include "stm32f30x_dma.h"
 
 uint32_t DAC_DataBuffer[TSL_PIXEL_COUNT];
@@ -51,35 +51,50 @@ static void DAC_TimerConfig()
 	TIM_Cmd(TIM2, ENABLE);
 }
 
-static void DAC_DMAConfig()
-{
-	DMA_InitTypeDef   DMA_InitStructure;
-
-	/* Enable DMA2 clock -------------------------------------------------------*/
-	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA2, ENABLE);
-
-	DMA_DeInit(DMA2_Channel3);
-	DMA_InitStructure.DMA_PeripheralBaseAddr = DAC_DHR12RD_Address;
-	DMA_InitStructure.DMA_MemoryBaseAddr     = (uint32_t)&DAC_DataBuffer;
-	DMA_InitStructure.DMA_DIR                = DMA_DIR_PeripheralDST;
-	DMA_InitStructure.DMA_BufferSize         = TSL_PIXEL_COUNT;
-	DMA_InitStructure.DMA_PeripheralInc      = DMA_PeripheralInc_Disable;
-	DMA_InitStructure.DMA_MemoryInc          = DMA_MemoryInc_Enable;
-	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Word;
-	DMA_InitStructure.DMA_MemoryDataSize     = DMA_MemoryDataSize_Word;
-	DMA_InitStructure.DMA_Mode               = DMA_Mode_Circular;
-	DMA_InitStructure.DMA_Priority           = DMA_Priority_High;
-	DMA_InitStructure.DMA_M2M                = DMA_M2M_Disable;
-	DMA_Init(DMA2_Channel3, &DMA_InitStructure);
-
-	/* Enable DMA2 Channel3 */
-	DMA_Cmd(DMA2_Channel3, ENABLE);
-}
-
-static void DAC_DACConfig()
+/* Configures the DAC to output a single value without using the DMA controller */
+static void DAC_SingleValueConfig()
 {
 	DAC_InitTypeDef   DAC_InitStructure;
 	GPIO_InitTypeDef  GPIO_InitStructure;
+
+	/* Enable GPIOA Periph clock --------------------------------------*/
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
+
+	/* Configure PA.04 (DAC1_OUT1), PA.05 (DAC1_OUT2) as analog */
+	GPIO_InitStructure.GPIO_Pin  =  DAC_OUTPUT_PIN_0 | DAC_OUTPUT_PIN_1;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+	/* DAC Periph clock enable */
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC, ENABLE);
+
+	/* Fill DAC InitStructure */
+	DAC_InitStructure.DAC_Trigger                      = DAC_Trigger_None;
+	DAC_InitStructure.DAC_WaveGeneration               = DAC_WaveGeneration_None;
+	DAC_InitStructure.DAC_LFSRUnmask_TriangleAmplitude = DAC_LFSRUnmask_Bits2_0;  
+	DAC_InitStructure.DAC_OutputBuffer                 = DAC_OutputBuffer_Disable;
+
+	/* DAC channel1 Configuration */
+	DAC_Init(DAC_Channel_1, &DAC_InitStructure);
+
+	/* DAC channel2 Configuration */
+	DAC_Init(DAC_Channel_2, &DAC_InitStructure);
+
+	/* Enable DAC Channel1: Once the DAC channel1 is enabled, PA.04 is 
+	automatically connected to the DAC converter. */
+	DAC_Cmd(DAC_Channel_1, ENABLE);
+
+	/* Enable DAC Channel2: Once the DAC channel2 is enabled, PA.05 is 
+	automatically connected to the DAC converter. */
+	DAC_Cmd(DAC_Channel_2, ENABLE);
+}
+
+static void DAC_DMA_Config()
+{
+	DAC_InitTypeDef   DAC_InitStructure;
+	GPIO_InitTypeDef  GPIO_InitStructure;
+	DMA_InitTypeDef   DMA_InitStructure;
 
 	/* Enable GPIOA Periph clock --------------------------------------*/
 	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
@@ -115,11 +130,35 @@ static void DAC_DACConfig()
 
 	/* Enable DMA for DAC Channel1 */
 	DAC_DMACmd(DAC_Channel_1, ENABLE);
+
+	/* Enable DMA2 clock -------------------------------------------------------*/
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA2, ENABLE);
+
+	DMA_DeInit(DMA2_Channel3);
+	DMA_InitStructure.DMA_PeripheralBaseAddr = DAC_DHR12RD_Address;
+	DMA_InitStructure.DMA_MemoryBaseAddr     = (uint32_t)&DAC_DataBuffer;
+	DMA_InitStructure.DMA_DIR                = DMA_DIR_PeripheralDST;
+	DMA_InitStructure.DMA_BufferSize         = TSL_PIXEL_COUNT;
+	DMA_InitStructure.DMA_PeripheralInc      = DMA_PeripheralInc_Disable;
+	DMA_InitStructure.DMA_MemoryInc          = DMA_MemoryInc_Enable;
+	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Word;
+	DMA_InitStructure.DMA_MemoryDataSize     = DMA_MemoryDataSize_Word;
+	DMA_InitStructure.DMA_Mode               = DMA_Mode_Circular;
+	DMA_InitStructure.DMA_Priority           = DMA_Priority_High;
+	DMA_InitStructure.DMA_M2M                = DMA_M2M_Disable;
+	DMA_Init(DMA2_Channel3, &DMA_InitStructure);
+
+	/* Enable DMA2 Channel3 */
+	DMA_Cmd(DMA2_Channel3, ENABLE);
 }
 
-void DAC_Setup()
+void DAC_DMA_Setup()
 {
-	DAC_DMAConfig();
-	DAC_DACConfig();
+	DAC_DMA_Config();
 	DAC_TimerConfig();
+}
+
+void DAC_SingleValue_Setup()
+{
+	DAC_SingleValueConfig();
 }

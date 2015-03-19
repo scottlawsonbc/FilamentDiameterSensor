@@ -16,6 +16,7 @@
 
 extern void DAC_SetCH1(uint32_t x[]);
 extern void DAC_SetCH2(uint32_t x[]);
-extern void DAC_Setup();
+extern void DAC_DMA_Setup();
+extern void DAC_SingleValue_Setup();
 
 #endif
