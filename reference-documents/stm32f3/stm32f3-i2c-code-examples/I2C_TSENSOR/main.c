@@ -39,8 +39,8 @@
   
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
-#define TEMPERATURE_THYS        0x14 /* 20¬∞C */
-#define TEMPERATURE_TOS         0x28 /* 40¬∞C */
+#define TEMPERATURE_THYS        0x14 /* 20∞C */
+#define TEMPERATURE_TOS         0x28 /* 40∞C */
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -114,11 +114,11 @@ int main(void)
     /* Configure the Temperature sensor device STTS751 */
     TS751_WriteConfReg(0x0C);    
     
-    /* Configure the Temperature Therm limit as 40¬∞C */
+    /* Configure the Temperature Therm limit as 40∞C */
     TS751_WriteReg(0x05, TEMPERATURE_TOS);   
     TS751_WriteReg(0x20, TEMPERATURE_TOS);   
 
-    /* Configure the Temperature Thys limit as 20¬∞C */
+    /* Configure the Temperature Thys limit as 20∞C */
     TS751_WriteReg(0x07, TEMPERATURE_THYS);   
     TS751_WriteReg(0x21, TEMPERATURE_THYS);
     
@@ -145,7 +145,7 @@ int main(void)
       
       TempCelsius = 0;
       
-      /* Calculate temperature digits in √ùC */
+      /* Calculate temperature digits in ›C */
       if (TempValueCelsius & 0x01)
       {
         TempCelsius += 625;     
@@ -182,12 +182,12 @@ int main(void)
       {
         if (((9 * TempValueCelsiusFloat) / 5) <= 32)
         {
-          /* Convert temperature ¬∞C to Fahrenheit */
+          /* Convert temperature ∞C to Fahrenheit */
           TempValueFahrenheitFloat = abs ((int)(32 - ((9 * TempValueCelsiusFloat) / 5)));
           
           TempValueFahrenheit = (int) (TempValueFahrenheitFloat);
           
-          /* Calculate temperature digits in ¬∞F */
+          /* Calculate temperature digits in ∞F */
           TempFahrenheitDisplay[5] = (TempValueFahrenheit / 100) + 0x30;
           TempFahrenheitDisplay[6] = ((TempValueFahrenheit % 100) / 10) + 0x30;
           TempFahrenheitDisplay[7] = ((TempValueFahrenheit % 100) % 10) + 0x30;
@@ -203,12 +203,12 @@ int main(void)
         }
         else
         {
-          /* Convert temperature ¬∞C to Fahrenheit */
+          /* Convert temperature ∞C to Fahrenheit */
           TempValueFahrenheitFloat = abs((int)(((9 * TempValueCelsiusFloat) / 5) - 32));
           
           TempValueFahrenheit = (int) (TempValueFahrenheitFloat);
           
-          /* Calculate temperature digits in ¬∞F */
+          /* Calculate temperature digits in ∞F */
           TempFahrenheitDisplay[5] = (TempValueFahrenheit / 100) + 0x30;
           TempFahrenheitDisplay[6] = ((TempValueFahrenheit % 100) / 10) + 0x30;
           TempFahrenheitDisplay[7] = ((TempValueFahrenheit % 100) % 10) + 0x30;
@@ -226,12 +226,12 @@ int main(void)
       }
       else
       {
-        /* Convert temperature ¬∞C to Fahrenheit */
+        /* Convert temperature ∞C to Fahrenheit */
         TempValueFahrenheitFloat = ((9 * TempValueCelsiusFloat) / 5) + 32;
         
         TempValueFahrenheit = (int) (TempValueFahrenheitFloat);
         
-        /* Calculate temperature digits in ¬∞F */
+        /* Calculate temperature digits in ∞F */
         TempFahrenheitDisplay[5] = (TempValueFahrenheit / 100) + 0x30;
         TempFahrenheitDisplay[6] = ((TempValueFahrenheit % 100) / 10) + 0x30;
         TempFahrenheitDisplay[7] = ((TempValueFahrenheit % 100) % 10) + 0x30;
@@ -248,8 +248,6 @@ int main(void)
       }
       /* Display Fahrenheit value on LCD */
       for (i = 0; i < 20; i++)
-
-      	
       {
         LCD_DisplayChar(LCD_LINE_6, (319 - (16 * i)), TempCelsiusDisplay[i]);
         LCD_DisplayChar(LCD_LINE_7, (319 - (16 * i)), TempFahrenheitDisplay[i]);

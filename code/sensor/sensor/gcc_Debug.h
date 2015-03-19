@@ -67,7 +67,6 @@
 #define __UINTMAX_TYPE__ long long unsigned int
 #define __LLFRACT_EPSILON__ 0x1P-63LLR
 #define __DEC32_EPSILON__ 1E-6DF
-#define __OPTIMIZE__ 1
 #define __CHAR_UNSIGNED__ 1
 #define __UINT32_MAX__ 4294967295UL
 #define __ULFRACT_MAX__ 0XFFFFFFFFP-32ULR
@@ -178,6 +177,7 @@
 #define __SQ_IBIT__ 0
 #define __UINT8_TYPE__ unsigned char
 #define __UHA_FBIT__ 8
+#define __NO_INLINE__ 1
 #define __SFRACT_MIN__ (-0.5HR-0.5HR)
 #define __UTQ_FBIT__ 128
 #define __FLT_MANT_DIG__ 24
@@ -204,6 +204,7 @@
 #define __SIZE_TYPE__ unsigned int
 #define __UINT64_MAX__ 18446744073709551615ULL
 #define __UDQ_FBIT__ 64
+#define DEBUG 1
 #define __INT8_TYPE__ signed char
 #define __thumb__ 1
 #define __ELF__ 1
@@ -323,7 +324,6 @@
 #define __USACCUM_FBIT__ 8
 #define __INT32_TYPE__ long int
 #define __SIZEOF_DOUBLE__ 8
-#define Debug 1
 #define __UFRACT_EPSILON__ 0x1P-16UR
 #define __INTMAX_TYPE__ long long int
 #define __DEC128_MAX_EXP__ 6145

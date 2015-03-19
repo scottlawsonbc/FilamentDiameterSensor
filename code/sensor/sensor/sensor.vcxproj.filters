@@ -124,9 +124,6 @@
     <ClCompile Include="source\geometry.c">
       <Filter>Source files</Filter>
     </ClCompile>
-    <ClCompile Include="source\i2c.c">
-      <Filter>Source files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile" />
@@ -268,9 +265,6 @@
       <Filter>Header files</Filter>
     </ClInclude>
     <ClInclude Include="source\geometry.h">
-      <Filter>Header files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\i2c.h">
       <Filter>Header files</Filter>
     </ClInclude>
   </ItemGroup>
