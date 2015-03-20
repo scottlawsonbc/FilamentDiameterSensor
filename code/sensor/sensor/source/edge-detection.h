@@ -21,7 +21,7 @@ typedef struct
 	float E0;
 	/* Rightmost edge index */
 	float E1;
-	/* Indicates whether valid filamnet was detected */
+	/* Indicates whether valid filament was detected */
 	bool IsValid;	
 } EdgeData;
 

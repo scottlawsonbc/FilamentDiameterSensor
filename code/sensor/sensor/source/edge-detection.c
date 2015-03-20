@@ -6,7 +6,7 @@
 #include "edge-detection.h"
 #include "dac.h"
 
-/* Performs a box filter on the given array
+/* Performs a forward-looking box filter on the given array
 *
 * This is a simple and fast box filter (also called box blur) that runs in O(n) time
 * Successive iterations of this filter can approximate Gaussian blur
@@ -47,7 +47,7 @@ void DET_ApproximateGaussianConvolution(int32_t x[])
 }
 
 /* Approximates a derivative using finite differences
-*  Calculates f[x]-f[x+1]. To optimize for speed, this does not divide by 2
+*  Calculates f[x+1]-f[x]. To optimize for speed, this does not divide by 2
 */
 void DET_FastFiniteDifferences(int32_t x[])
 {
