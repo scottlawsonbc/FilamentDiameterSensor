@@ -11,11 +11,11 @@
 */
 void GEO_Add_Sensor_Offsets(EdgeData* edge_position_a, EdgeData* edge_position_b)
 {
-	float sensor_width_mm = TSL_SENSOR_WIDTH_NM / 1000.f / 1000.0f;
-	edge_position_a->E0 += GEO_A_SENSOR_OFFSET_MM;
-	edge_position_a->E1 += GEO_A_SENSOR_OFFSET_MM;
-	edge_position_b->E0 =  GEO_B_SENSOR_OFFSET_MM + sensor_width_mm - edge_position_b->E0; /* Referenced from far end of sensor */
-	edge_position_b->E1 =  GEO_B_SENSOR_OFFSET_MM + sensor_width_mm - edge_position_b->E1; /* Referenced from far end of sensor */
+	float sensor_edge_to_first_pixel_mm = TSL_EDGE_TO_FIRST_PIXEL_NM / 1000.f / 1000.f;
+	edge_position_a->E0 += GEO_A_SENSOR_OFFSET_MM + sensor_edge_to_first_pixel_mm;
+	edge_position_a->E1 += GEO_A_SENSOR_OFFSET_MM + sensor_edge_to_first_pixel_mm;
+	edge_position_b->E0 =  GEO_B_SENSOR_OFFSET_MM - sensor_edge_to_first_pixel_mm - edge_position_b->E0; /* Referenced from far end of sensor */
+	edge_position_b->E1 =  GEO_B_SENSOR_OFFSET_MM - sensor_edge_to_first_pixel_mm - edge_position_b->E1; /* Referenced from far end of sensor */
 }
 
 /* Returns an averaged diameter based on the two perpendicular widths
