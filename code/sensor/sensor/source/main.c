@@ -1,6 +1,7 @@
 #include <stm32f30x_gpio.h>
 #include <stm32f30x_rcc.h>
 #include <stm32f30x_adc.h>
+#include "stm32f30x_dac.h"
 #include <stdio.h>
 #include <math.h>
 #include "dac.h"
@@ -24,71 +25,72 @@ int main()
 	Delay_Init();
 	TSL_Init();
 	LED_Init();
+	DAC_SingleValue_Setup();
 	I2C_Config();
-	DelayMs(10);
-	uprintf("Reset\r\n");
+
+	/* Turn on lasers */
+	LED_Write(0, Bit_SET);
+	LED_Write(1, Bit_SET);
+
+	//	uprintf("Reset\r\n");
+	//	while(1)
+	//	{
+	//	
+	//	}
+	//	//uprintf("Last byte: %i\r\n", data);
+	//	//DelayMs(250);
+	//}
+
+
+	//// Turn on the sensor LEDs
+	//LED_Write(0, Bit_SET);
+	//LED_Write(1, Bit_SET);
+
+	const int iterations = 300;
 	while(1)
 	{
-		int x;
-		for (x=0x7F; x; x--)
+		int i;
+		EdgeData x_edge_sum = {0,0,0,1};
+		EdgeData y_edge_sum = {0,0,0,1};
+		for (i = 1; i < iterations+1; i++)
 		{
-			I2C_Write(x,x, x);
-			DelayMs(1);
+			TSL_MeasurePixels(xPixels, yPixels);
+			EdgeData edge_x = DET_MicronsBetweenEdges(xPixels);
+			EdgeData edge_y = DET_MicronsBetweenEdges(yPixels);
 
+			if (edge_x.IsValid && edge_y.IsValid)
+			{
+				/* Add the x-result to the sum */
+				x_edge_sum.E0    += edge_x.E0;
+				x_edge_sum.E1    += edge_x.E1;
+				x_edge_sum.Width += edge_x.Width;
+
+				/* Add the y-result to the sum */
+				y_edge_sum.E0    += edge_y.E0;
+				y_edge_sum.E1    += edge_y.E1;
+				y_edge_sum.Width += edge_y.Width;
+			}
+			else
+			{
+				i -= 1; /* Reject the measurement */
+			}
+			LED_Write(2, (BitAction)(edge_x.IsValid));
+			LED_Write(3, (BitAction)(edge_y.IsValid));
 		}
+
+		x_edge_sum.E0    *= (TSL_PIXEL_SPACING_NM / 1000.0f / 1000.0f) / (float)iterations;
+		x_edge_sum.E1    *= (TSL_PIXEL_SPACING_NM / 1000.0f / 1000.0f) / (float)iterations;
+		x_edge_sum.Width /= (float)iterations;
+		y_edge_sum.E0    *= (TSL_PIXEL_SPACING_NM / 1000.0f / 1000.0f) / (float)iterations;
+		y_edge_sum.E1    *= (TSL_PIXEL_SPACING_NM / 1000.0f / 1000.0f) / (float)iterations;
+		y_edge_sum.Width /= (float)iterations;
+
+		float diameter = GEO_Filament_Diameter_MM(x_edge_sum, y_edge_sum);
+		DAC_SetChannel1Data(DAC_Align_12b_R, (uint16_t)((diameter*1000.0)*(4096.0/3000.0)));
+		uprintf("Diameter: %f\r\n", diameter);
 	}
-	//uprintf("Last byte: %i\r\n", data);
-	//DelayMs(250);
+
 }
-
-
-//// Turn on the sensor LEDs
-//LED_Write(0, Bit_SET);
-//LED_Write(1, Bit_SET);
-
-//const int iterations = 300;
-//while(1)
-//{
-//	int i;
-//	EdgeData x_edge_sum = {0,0,0,1};
-//	EdgeData y_edge_sum = {0,0,0,1};
-//	for (i = 1; i < iterations+1; i++)
-//	{
-//		TSL_MeasurePixels(xPixels, yPixels);
-//		EdgeData edge_x = DET_MicronsBetweenEdges(xPixels);
-//		EdgeData edge_y = DET_MicronsBetweenEdges(yPixels);
-
-//		if (edge_x.IsValid && edge_y.IsValid)
-//		{
-//			/* Add the x-result to the sum */
-//			x_edge_sum.E0    += edge_x.E0;
-//			x_edge_sum.E1    += edge_x.E1;
-//			x_edge_sum.Width += edge_x.Width;
-
-//			/* Add the y-result to the sum */
-//			y_edge_sum.E0    += edge_y.E0;
-//			y_edge_sum.E1    += edge_y.E1;
-//			y_edge_sum.Width += edge_y.Width;
-//		}
-//		else
-//		{
-//			i -= 1; /* Reject the measurement */
-//		}
-//		LED_Write(2, (BitAction)(edge_x.IsValid));
-//		LED_Write(3, (BitAction)(edge_y.IsValid));
-//	}
-
-//	x_edge_sum.E0    *= (TSL_PIXEL_SPACING_NM / 1000.0f / 1000.0f) / (float)iterations;
-//	x_edge_sum.E1    *= (TSL_PIXEL_SPACING_NM / 1000.0f / 1000.0f) / (float)iterations;
-//	x_edge_sum.Width /= (float)iterations;
-//	y_edge_sum.E0    *= (TSL_PIXEL_SPACING_NM / 1000.0f / 1000.0f) / (float)iterations;
-//	y_edge_sum.E1    *= (TSL_PIXEL_SPACING_NM / 1000.0f / 1000.0f) / (float)iterations;
-//	y_edge_sum.Width /= (float)iterations;
-
-//	float diameter = GEO_Filament_Diameter_MM(x_edge_sum, y_edge_sum);
-
-
-
 //****************************************************************************
 
 #ifdef  USE_FULL_ASSERT
