@@ -20,15 +20,15 @@
 #define TSL_CLOCK_DELAY_US          (0U)
 
 /* Digital pins connected to GPIOE */
-#define TSL_SERIAL_PIN              (GPIO_Pin_11 | GPIO_Pin_8) 
-#define TSL_CLOCK_PIN               (GPIO_Pin_9  | GPIO_Pin_10)
+#define TSL_SERIAL_PIN              (GPIO_Pin_11 | GPIO_Pin_10) 
+#define TSL_CLOCK_PIN               (GPIO_Pin_9  | GPIO_Pin_8)
 
 /* ADC1 connected to GPIOA */
-#define TSL_ADC1_INPUT_PIN          (GPIO_Pin_1)
-#define TSL_ADC1_CHANNEL		    (ADC_Channel_2)
+#define TSL_ADC1_INPUT_PIN          (GPIO_Pin_2)
+#define TSL_ADC1_CHANNEL		    (ADC_Channel_3)
 /* ADC2 connected to GPIOA */
-#define TSL_ADC2_INPUT_PIN		    (GPIO_Pin_4)
-#define TSL_ADC2_CHANNEL            (ADC_Channel_1)
+#define TSL_ADC2_INPUT_PIN		    (GPIO_Pin_6)
+#define TSL_ADC2_CHANNEL            (ADC_Channel_3)
 
 extern void TSL_Init();
 //extern void TSL_MeasurePixels(int32_t *pixels);
