@@ -13,7 +13,7 @@
 #define TSL_PIXEL_COUNT             (128U)
 #define TSL_PIXEL_SPACING_NM        (63500U)
 #define TSL_SENSOR_WIDTH_NM         (TSL_PIXEL_SPACING_NM*TSL_PIXEL_COUNT)
-
+#define TSL_EDGE_TO_FIRST_PIXEL_NM	(716800U)
 
 /* Timing parameters */
 #define TSL_CHARGE_TRANSFER_TIME_US (20U)
