@@ -10,6 +10,7 @@
 *
 * This is a simple and fast box filter (also called box blur) that runs in O(n) time
 * Successive iterations of this filter can approximate Gaussian blur
+* The division of each box filter sum is neglected for efficiency
 */
 void DET_BoxFilter(int32_t x[])
 {
@@ -21,7 +22,7 @@ void DET_BoxFilter(int32_t x[])
 	}
 	for (i = 0; i < TSL_PIXEL_COUNT - DET_BOX_FILTER_LENGTH; i++)
 	{
-		x[i] = movingSum / DET_BOX_FILTER_LENGTH;
+		x[i] = movingSum;
 		movingSum -= x[i];
 		movingSum += x[i + DET_BOX_FILTER_LENGTH];
 	}
@@ -29,6 +30,50 @@ void DET_BoxFilter(int32_t x[])
 	for (i = TSL_PIXEL_COUNT - DET_BOX_FILTER_LENGTH; i < TSL_PIXEL_COUNT; i++)
 	{
 		x[i] = x[TSL_PIXEL_COUNT - DET_BOX_FILTER_LENGTH];
+	}
+}
+
+/* Performs a centered box filter on the given array
+ *
+ * This filter averages over a box +N and -N pixels from the current pixel (where N is
+ * DET_BOX_FILTER_LENGTH). A circular array is used to store the averages. This filter
+ * runs in O(n) time. The division of each shifting sum is neglected for efficiency.
+ */
+void DET_BoxFilterCentered(int32_t x[])
+{
+	uint32_t i;
+	uint32_t movingSum = 0;
+	uint32_t storedAverages[DET_BOX_FILTER_LENGTH + 1];
+
+	/* Preparing the moving average sum */
+	for (i = 0; i < ((2*DET_BOX_FILTER_LENGTH) + 1); i++)
+	{
+		movingSum += x[i];
+	}
+
+	for (i = DET_BOX_FILTER_LENGTH; i < (2*DET_BOX_FILTER_LENGTH + 1); i++)
+	{
+		storedAverages[i % (DET_BOX_FILTER_LENGTH + 1)] = movingSum;
+		movingSum += x[i + DET_BOX_FILTER_LENGTH + 1];
+		movingSum -= x[i - DET_BOX_FILTER_LENGTH];
+	}
+	for (i = 2*DET_BOX_FILTER_LENGTH + 1; i < TSL_PIXEL_COUNT - DET_BOX_FILTER_LENGTH; i++)
+	{
+		x[i - DET_BOX_FILTER_LENGTH - 1] = storedAverages[i % (DET_BOX_FILTER_LENGTH + 1)];
+		storedAverages[i % (DET_BOX_FILTER_LENGTH + 1)] = movingSum;
+		movingSum += x[i + DET_BOX_FILTER_LENGTH + 1];
+		movingSum -= x[i - DET_BOX_FILTER_LENGTH];
+	}
+	for (i = TSL_PIXEL_COUNT - DET_BOX_FILTER_LENGTH; i < TSL_PIXEL_COUNT; i++)
+	{
+		x[i - DET_BOX_FILTER_LENGTH - 1] = storedAverages[i % (DET_BOX_FILTER_LENGTH + 1)];
+	}
+
+	/* Edge case handling */
+	for (i = 0; i < DET_BOX_FILTER_LENGTH; i++)
+	{
+		x[i] = x[DET_BOX_FILTER_LENGTH];
+		x[TSL_PIXEL_COUNT - 1 - i] = x[TSL_PIXEL_COUNT - 1 - DET_BOX_FILTER_LENGTH];
 	}
 }
 
@@ -42,12 +87,13 @@ void DET_ApproximateGaussianConvolution(int32_t x[])
 	uint32_t i;
 	for (i = 0; i < DET_GAUSSIAN_ITERATIONS; i++)
 	{
-		DET_BoxFilter(x);
+		//DET_BoxFilter(x);
+		DET_BoxFilterCentered(x);
 	}
 }
 
 /* Approximates a derivative using finite differences
-*  Calculates f[x+1]-f[x]. To optimize for speed, this does not divide by 2
+*  Calculates f[x+1]-f[x]. To optimize for speed, this does not divide by h (2)
 */
 void DET_FastFiniteDifferences(int32_t x[])
 {
@@ -57,6 +103,29 @@ void DET_FastFiniteDifferences(int32_t x[])
 		x[i] = x[i+1]-x[i];
 	}
 	/* Edge case handling */
+	x[TSL_PIXEL_COUNT-1] = x[TSL_PIXEL_COUNT-2];
+}
+
+/* Approximates a derivative using 1st order centered finite differences
+*  Calculates f[x+1]-f[x-1]. To optimize for speed, this does not divide by 2*h (4)
+*/
+void DET_FastCenteredFiniteDifferences(int32_t x[])
+{
+	uint32_t i;
+	uint32_t storage[2];
+
+	storage[1] = x[2]-x[0];
+	storage[0] = x[3]-x[1];
+	for (i = 3; i < TSL_PIXEL_COUNT - 1; i++)
+	{
+		x[i - 2] = storage[i % 2];
+		storage[i % 2] = x[i+1]-x[i-1];
+	}
+	x[TSL_PIXEL_COUNT - 3] = storage[(TSL_PIXEL_COUNT - 3) % 2];
+	x[TSL_PIXEL_COUNT - 2] = storage[(TSL_PIXEL_COUNT - 2) % 2];
+
+	/* Edge case handling */
+	x[0] = x[1];
 	x[TSL_PIXEL_COUNT-1] = x[TSL_PIXEL_COUNT-2];
 }
 
@@ -101,7 +170,8 @@ EdgeData DET_MicronsBetweenEdges(int32_t x[])
 	DET_ApproximateGaussianConvolution(x);
 
 	/* Compute the derivative to expose the extrema */
-	DET_FastFiniteDifferences(x);
+	//DET_FastFiniteDifferences(x);
+	DET_FastCenteredFiniteDifferences(x);
 
 	/* The two edges are the extrema of the function */
 	EdgeData edge_data = {0,0,0,true};
