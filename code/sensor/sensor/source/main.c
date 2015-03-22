@@ -21,32 +21,18 @@ int32_t yPixels[TSL_PIXEL_COUNT];
 
 int main()
 {
-	USART1_Init(USART1_BAUDRATE);
+	//USART1_Init(USART1_BAUDRATE);
 	Delay_Init();
 	TSL_Init();
 	LED_Init();
 	DAC_SingleValue_Setup();
-	I2C_Config();
+	//I2C_Config();
 
 	/* Turn on lasers */
 	LED_Write(0, Bit_SET);
 	LED_Write(1, Bit_SET);
 
-	//	uprintf("Reset\r\n");
-	//	while(1)
-	//	{
-	//	
-	//	}
-	//	//uprintf("Last byte: %i\r\n", data);
-	//	//DelayMs(250);
-	//}
-
-
-	//// Turn on the sensor LEDs
-	//LED_Write(0, Bit_SET);
-	//LED_Write(1, Bit_SET);
-
-	const int iterations = 300;
+	const int iterations = 6000;
 	while(1)
 	{
 		int i;
@@ -87,9 +73,8 @@ int main()
 
 		float diameter = GEO_Filament_Diameter_MM(x_edge_sum, y_edge_sum);
 		DAC_SetChannel1Data(DAC_Align_12b_R, (uint16_t)((diameter*1000.0)*(4096.0/3000.0)));
-		uprintf("Diameter: %f\r\n", diameter);
+		//uprintf("Diameter: %f\r\n", diameter);
 	}
-
 }
 //****************************************************************************
 
