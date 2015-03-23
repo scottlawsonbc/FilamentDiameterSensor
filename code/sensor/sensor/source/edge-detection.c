@@ -22,7 +22,7 @@ void DET_BoxFilter(int32_t x[])
 	}
 	for (i = 0; i < TSL_PIXEL_COUNT - DET_BOX_FILTER_LENGTH; i++)
 	{
-		x[i] = movingSum;
+		x[i] = movingSum / DET_BOX_FILTER_LENGTH;
 		movingSum -= x[i];
 		movingSum += x[i + DET_BOX_FILTER_LENGTH];
 	}
@@ -87,8 +87,8 @@ void DET_ApproximateGaussianConvolution(int32_t x[])
 	uint32_t i;
 	for (i = 0; i < DET_GAUSSIAN_ITERATIONS; i++)
 	{
-		//DET_BoxFilter(x);
-		DET_BoxFilterCentered(x);
+		DET_BoxFilter(x);
+	//	DET_BoxFilterCentered(x);
 	}
 }
 
