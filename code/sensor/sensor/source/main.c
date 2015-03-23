@@ -1,81 +1,96 @@
-#include <stm32f30x_gpio.h>
-#include <stm32f30x_rcc.h>
-#include <stm32f30x_adc.h>
-#include "stm32f30x_dac.h"
-#include <stdio.h>
-#include <math.h>
-#include "dac.h"
-#include "usart.h"
-#include "delay.h"
-#include "tsl1401cl.h"
-#include "edge-detection.h"
-#include "led-bar.h"
-#include "opamp.h"
-#include "geometry.h"
-#include "i2c.h"
+#include "main.h"
 
-#define USART1_BAUDRATE (115200U)
 char buffer[60];
 int32_t xPixels[TSL_PIXEL_COUNT];
 int32_t yPixels[TSL_PIXEL_COUNT];
 
+uint16_t MAIN_AveragingIterations = MAIN_DEFAULT_AVERAGING;
+FunctionalState MAIN_SensorState = DISABLE;
+float MAIN_FilamentDiameter_MM = 0;
+
 int main()
 {
-	//USART1_Init(USART1_BAUDRATE);
+	USART1_Init(USART1_BAUDRATE);
 	Delay_Init();
 	TSL_Init();
 	LED_Init();
 	DAC_SingleValue_Setup();
 	//I2C_Config();
 
-	/* Turn on lasers */
-	LED_Write(0, Bit_SET);
-	LED_Write(1, Bit_SET);
+	MAIN_SetSensorState(ENABLE);
 
-	const int iterations = 6000;
 	while(1)
 	{
-		int i;
-		EdgeData x_edge_sum = {0,0,0,1};
-		EdgeData y_edge_sum = {0,0,0,1};
-		for (i = 1; i < iterations+1; i++)
+		if (MAIN_SensorState == ENABLE)
 		{
-			TSL_MeasurePixels(xPixels, yPixels);
-			EdgeData edge_x = DET_MicronsBetweenEdges(xPixels);
-			EdgeData edge_y = DET_MicronsBetweenEdges(yPixels);
-
-			if (edge_x.IsValid && edge_y.IsValid)
+			uint16_t i;
+			EdgeData x_edge_sum = {0,0,0,1};
+			EdgeData y_edge_sum = {0,0,0,1};
+			for (i = 1; i < MAIN_AveragingIterations+1; i++)
 			{
-				/* Add the x-result to the sum */
-				x_edge_sum.E0    += edge_x.E0;
-				x_edge_sum.E1    += edge_x.E1;
-				x_edge_sum.Width += edge_x.Width;
+				/* Measure the pixel array sensors and determine the shadow edges */
+				TSL_MeasurePixels(xPixels, yPixels);
+				EdgeData edge_x = DET_MicronsBetweenEdges(xPixels);
+				EdgeData edge_y = DET_MicronsBetweenEdges(yPixels);
+				
+				uprintf("%i\r\n", i);
 
-				/* Add the y-result to the sum */
-				y_edge_sum.E0    += edge_y.E0;
-				y_edge_sum.E1    += edge_y.E1;
-				y_edge_sum.Width += edge_y.Width;
+				if (edge_x.IsValid && edge_y.IsValid)
+				{
+					/* Add the x-result to the sum */
+					x_edge_sum.E0    += edge_x.E0;
+					x_edge_sum.E1    += edge_x.E1;
+					x_edge_sum.Width += edge_x.Width;
+
+					/* Add the y-result to the sum */
+					y_edge_sum.E0    += edge_y.E0;
+					y_edge_sum.E1    += edge_y.E1;
+					y_edge_sum.Width += edge_y.Width;
+				}
+				else
+				{
+					i -= 1; /* Reject the measurement */
+				}
+				/* Display the filament validity detection on the LEDs */
+				LED_Write(2, (BitAction)(edge_x.IsValid));
+				LED_Write(3, (BitAction)(edge_y.IsValid));
+
+				/* Check the I2C bus to see if a command was recieved */
+				//I2C_CheckReceive();
 			}
-			else
-			{
-				i -= 1; /* Reject the measurement */
-			}
-			LED_Write(2, (BitAction)(edge_x.IsValid));
-			LED_Write(3, (BitAction)(edge_y.IsValid));
+
+			/* Divide the sum by the number of sampling iterations to get the averaged data */
+			x_edge_sum.E0    *= (TSL_PIXEL_SPACING_NM / 1000.0f / 1000.0f) / (float)MAIN_AveragingIterations;
+			x_edge_sum.E1    *= (TSL_PIXEL_SPACING_NM / 1000.0f / 1000.0f) / (float)MAIN_AveragingIterations;
+			x_edge_sum.Width /= (float)MAIN_AveragingIterations;
+			y_edge_sum.E0    *= (TSL_PIXEL_SPACING_NM / 1000.0f / 1000.0f) / (float)MAIN_AveragingIterations;
+			y_edge_sum.E1    *= (TSL_PIXEL_SPACING_NM / 1000.0f / 1000.0f) / (float)MAIN_AveragingIterations;
+			y_edge_sum.Width /= (float)i;
+
+			/* Compute the filament diameter */
+			float diameter = GEO_Filament_Diameter_MM(x_edge_sum, y_edge_sum);
+			/* Update the most recent filament diameter measurement */			
+			MAIN_FilamentDiameter_MM = diameter;
+			uprintf("Diameter: %f\r\n", diameter);
+			/* Set analog output to converted filament diameter */
+			DAC_SetChannel1Data(DAC_Align_12b_R, (uint16_t)((diameter*1000.0)*(4096.0/3000.0)));
 		}
-
-		x_edge_sum.E0    *= (TSL_PIXEL_SPACING_NM / 1000.0f / 1000.0f) / (float)iterations;
-		x_edge_sum.E1    *= (TSL_PIXEL_SPACING_NM / 1000.0f / 1000.0f) / (float)iterations;
-		x_edge_sum.Width /= (float)iterations;
-		y_edge_sum.E0    *= (TSL_PIXEL_SPACING_NM / 1000.0f / 1000.0f) / (float)iterations;
-		y_edge_sum.E1    *= (TSL_PIXEL_SPACING_NM / 1000.0f / 1000.0f) / (float)iterations;
-		y_edge_sum.Width /= (float)iterations;
-
-		float diameter = GEO_Filament_Diameter_MM(x_edge_sum, y_edge_sum);
-		DAC_SetChannel1Data(DAC_Align_12b_R, (uint16_t)((diameter*1000.0)*(4096.0/3000.0)));
-		//uprintf("Diameter: %f\r\n", diameter);
+		else
+		{
+			/* Check the I2C bus to see if data was received */
+		//	I2C_CheckReceive();
+		}
 	}
 }
+
+/* Change the state of the sensor */
+void MAIN_SetSensorState(FunctionalState state)
+{
+	MAIN_SensorState = state;
+	LED_Write(0, (BitAction)state);
+	LED_Write(1, (BitAction)state);
+}
+
 //****************************************************************************
 
 #ifdef  USE_FULL_ASSERT
