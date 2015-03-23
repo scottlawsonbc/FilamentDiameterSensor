@@ -10,11 +10,13 @@
 #include "stm32f30x_syscfg.h"
 #include "delay.h"
 
-#define I2C_OWN_ADDRESS (0x30)
+#define I2C_OWN_ADDRESS (0x22)
 
 #define I2C_LONG_TIMEOUT ((uint32_t)(10 * I2C_FLAG_TIMEOUT))  
 #define I2C_OK                       ((uint32_t) 0)
 #define I2C_FAIL                     ((uint32_t) 0)
+
+#define I2C_RX_PACKET_BUFFER_LENGTH (10U)
 
 /* Low-level pin definitions */
 #define I2C                       I2C1
@@ -61,6 +63,7 @@ extern uint16_t I2C_Write(uint8_t deviceAddressess, uint8_t registerAddress, uin
 extern uint16_t I2C_Read(uint8_t deviceAddress, uint8_t registerAddress, uint8_t* dataPointer, uint16_t bytesToRead);
 extern void I2C_TestWrite(uint8_t reg);
 extern uint8_t I2C_TestRead(void);
+extern void I2C_CheckReceive();
 
 #endif /* I2C_H */
 
