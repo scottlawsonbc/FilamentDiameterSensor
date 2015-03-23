@@ -204,6 +204,7 @@
 #define __SIZE_TYPE__ unsigned int
 #define __UINT64_MAX__ 18446744073709551615ULL
 #define __UDQ_FBIT__ 64
+#define DEBUG 1
 #define __INT8_TYPE__ signed char
 #define __thumb__ 1
 #define __ELF__ 1
@@ -323,7 +324,6 @@
 #define __USACCUM_FBIT__ 8
 #define __INT32_TYPE__ long int
 #define __SIZEOF_DOUBLE__ 8
-#define Debug 1
 #define __UFRACT_EPSILON__ 0x1P-16UR
 #define __INTMAX_TYPE__ long long int
 #define __DEC128_MAX_EXP__ 6145
