@@ -16,20 +16,29 @@ void DET_BoxFilter(int32_t x[])
 {
 	uint32_t i;
 	uint32_t movingSum = 0;
+	uint32_t oldValue;
+	const uint32_t divisor = DET_BOX_FILTER_LENGTH;
+	//const uint32_t divisor = 1;
+
+
+	/* Preparing the moving sum */
 	for (i = 0; i < DET_BOX_FILTER_LENGTH; i++)
 	{
 		movingSum += x[i];
 	}
+
 	for (i = 0; i < TSL_PIXEL_COUNT - DET_BOX_FILTER_LENGTH; i++)
 	{
-		x[i] = movingSum / DET_BOX_FILTER_LENGTH;
-		movingSum -= x[i];
+		oldValue = x[i];
+		x[i] = movingSum / divisor;
+		movingSum -= oldValue;
 		movingSum += x[i + DET_BOX_FILTER_LENGTH];
 	}
+
 	/* Edge case handling */
 	for (i = TSL_PIXEL_COUNT - DET_BOX_FILTER_LENGTH; i < TSL_PIXEL_COUNT; i++)
 	{
-		x[i] = x[TSL_PIXEL_COUNT - DET_BOX_FILTER_LENGTH];
+		x[i] = movingSum / divisor;
 	}
 }
 
@@ -44,6 +53,8 @@ void DET_BoxFilterCentered(int32_t x[])
 	uint32_t i;
 	uint32_t movingSum = 0;
 	uint32_t storedAverages[DET_BOX_FILTER_LENGTH + 1];
+	const uint32_t divisor = 2*DET_BOX_FILTER_LENGTH + 1;
+	//const uint32_t divisor = 1;
 
 	/* Preparing the moving average sum */
 	for (i = 0; i < ((2*DET_BOX_FILTER_LENGTH) + 1); i++)
@@ -51,20 +62,21 @@ void DET_BoxFilterCentered(int32_t x[])
 		movingSum += x[i];
 	}
 
-	for (i = DET_BOX_FILTER_LENGTH; i < (2*DET_BOX_FILTER_LENGTH + 1); i++)
+	/* Rolling average */
+	for (i = DET_BOX_FILTER_LENGTH; i < 2*DET_BOX_FILTER_LENGTH + 1; i++)
 	{
-		storedAverages[i % (DET_BOX_FILTER_LENGTH + 1)] = movingSum;
+		storedAverages[i % (DET_BOX_FILTER_LENGTH + 1)] = movingSum / divisor;
 		movingSum += x[i + DET_BOX_FILTER_LENGTH + 1];
 		movingSum -= x[i - DET_BOX_FILTER_LENGTH];
 	}
 	for (i = 2*DET_BOX_FILTER_LENGTH + 1; i < TSL_PIXEL_COUNT - DET_BOX_FILTER_LENGTH; i++)
 	{
 		x[i - DET_BOX_FILTER_LENGTH - 1] = storedAverages[i % (DET_BOX_FILTER_LENGTH + 1)];
-		storedAverages[i % (DET_BOX_FILTER_LENGTH + 1)] = movingSum;
+		storedAverages[i % (DET_BOX_FILTER_LENGTH + 1)] = movingSum / divisor;
 		movingSum += x[i + DET_BOX_FILTER_LENGTH + 1];
 		movingSum -= x[i - DET_BOX_FILTER_LENGTH];
 	}
-	for (i = TSL_PIXEL_COUNT - DET_BOX_FILTER_LENGTH; i < TSL_PIXEL_COUNT; i++)
+	for (i = TSL_PIXEL_COUNT - DET_BOX_FILTER_LENGTH; i < TSL_PIXEL_COUNT+1; i++)
 	{
 		x[i - DET_BOX_FILTER_LENGTH - 1] = storedAverages[i % (DET_BOX_FILTER_LENGTH + 1)];
 	}
