@@ -15,7 +15,7 @@ int main()
 	TSL_Init();
 	LED_Init();
 	DAC_SingleValue_Setup();
-	//I2C_Config();
+	I2C_Config();
 
 	MAIN_SetSensorState(ENABLE);
 
@@ -32,8 +32,6 @@ int main()
 				TSL_MeasurePixels(xPixels, yPixels);
 				EdgeData edge_x = DET_MicronsBetweenEdges(xPixels);
 				EdgeData edge_y = DET_MicronsBetweenEdges(yPixels);
-				
-				uprintf("%i\r\n", i);
 
 				if (edge_x.IsValid && edge_y.IsValid)
 				{
@@ -56,7 +54,7 @@ int main()
 				LED_Write(3, (BitAction)(edge_y.IsValid));
 
 				/* Check the I2C bus to see if a command was recieved */
-				//I2C_CheckReceive();
+				I2C_CheckReceive();
 			}
 
 			/* Divide the sum by the number of sampling iterations to get the averaged data */
@@ -71,14 +69,15 @@ int main()
 			float diameter = GEO_Filament_Diameter_MM(x_edge_sum, y_edge_sum);
 			/* Update the most recent filament diameter measurement */			
 			MAIN_FilamentDiameter_MM = diameter;
+			/* Output data via USART */
 			uprintf("Diameter: %f\r\n", diameter);
-			/* Set analog output to converted filament diameter */
+			/* Output data via DAC */
 			DAC_SetChannel1Data(DAC_Align_12b_R, (uint16_t)((diameter*1000.0)*(4096.0/3000.0)));
 		}
 		else
 		{
 			/* Check the I2C bus to see if data was received */
-		//	I2C_CheckReceive();
+			I2C_CheckReceive();
 		}
 	}
 }
