@@ -368,11 +368,11 @@ bool cancel_heatup = false;
   float filament_width_nominal=DEFAULT_NOMINAL_FILAMENT_DIA;  //Set nominal filament width, can be changed with M404 
   bool filament_sensor=false;  //M405 turns on filament_sensor control, M406 turns it off 
   float filament_width_meas=DEFAULT_MEASURED_FILAMENT_DIA; //Stores the measured filament diameter 
-  signed char measurement_delay[MAX_MEASUREMENT_DELAY+1];  //ring buffer to delay measurement  store extruder factor after subtracting 100 
+  signed char measurement_delay[10*MAX_MEASUREMENT_DELAY+1];  //ring buffer to delay measurement  store extruder factor after subtracting 100 
   int delay_index1=0;  //index into ring buffer
   int delay_index2=-1;  //index into ring buffer - set to -1 on startup to indicate ring buffer needs to be initialized
   float delay_dist=0; //delay distance counter  
-  int meas_delay_cm = MEASUREMENT_DELAY_CM;  //distance delay setting
+  int meas_delay_cm = 10*MEASUREMENT_DELAY_CM;  //distance delay setting
 #endif
 
 #ifdef FILAMENT_RUNOUT_SENSOR
@@ -4375,7 +4375,7 @@ inline void gcode_M400() { st_synchronize(); }
    * M405: Turn on filament sensor for control
    */
   inline void gcode_M405() {
-    if (code_seen('D')) meas_delay_cm = code_value();
+    if (code_seen('D')) meas_delay_cm = 10*code_value();
     if (meas_delay_cm > MAX_MEASUREMENT_DELAY) meas_delay_cm = MAX_MEASUREMENT_DELAY;
 
     if (delay_index2 == -1) { //initialize the ring buffer if it has not been done since startup
@@ -4389,16 +4389,21 @@ inline void gcode_M400() { st_synchronize(); }
 
     filament_sensor = true;
 
-    //SERIAL_PROTOCOLPGM("Filament dia (measured mm):");
-    //SERIAL_PROTOCOL(filament_width_meas);
-    //SERIAL_PROTOCOLPGM("Extrusion ratio(%):");
-    //SERIAL_PROTOCOL(extrudemultiply);
+    SERIAL_PROTOCOLPGM("Filament dia (measured mm):");
+    SERIAL_PROTOCOL(filament_width_meas);
+    SERIAL_PROTOCOLPGM("Extrusion ratio(%):");
+    SERIAL_PROTOCOL(extrudemultiply);
   }
 
   /**
    * M406: Turn off filament sensor for control
    */
-  inline void gcode_M406() { filament_sensor = false; }
+  inline void gcode_M406()
+   { 
+    filament_sensor = !filament_sensor;
+    SERIAL_PROTOCOLPGM("Filament sensor:");
+    SERIAL_PROTOCOL(filament_sensor);
+   }
   
   /**
    * M407: Get measured filament diameter on serial output

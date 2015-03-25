@@ -828,7 +828,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 // Uncomment below to enable
 #define FILAMENT_SENSOR
 
-#define FILAMENT_SENSOR_EXTRUDER_NUM	0  //The number of the extruder that has the filament sensor (0,1,2)
+#define FILAMENT_SENSOR_EXTRUDER_NUM	1  //The number of the extruder that has the filament sensor (0,1,2)
 #define MEASUREMENT_DELAY_CM			60  //measurement delay in cm.  This is the distance from filament sensor to middle of barrel
 
 #define DEFAULT_NOMINAL_FILAMENT_DIA  1.75  //Enter the diameter (in mm) of the filament generally used (3.0 mm or 1.75 mm) - this is then used in the slicer software.  Used for sensor reading validation
@@ -836,20 +836,11 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 #define MEASURED_LOWER_LIMIT          1.0  //lower limit factor for sensor reading validation in mm
 #define MAX_MEASUREMENT_DELAY		   70  //delay buffer size in bytes (1 byte = 1cm)- limits maximum measurement delay allowable (must be larger than MEASUREMENT_DELAY_CM  and lower number saves RAM)
 
-// When using an LCD, uncomment the line below to display the Filament sensor data on the last line instead of status.  Status will appear for 5 sec.
-#define FILAMENT_LCD_DISPLAY
-
 //defines used in the code
 #define DEFAULT_MEASURED_FILAMENT_DIA  DEFAULT_NOMINAL_FILAMENT_DIA  //set measured to nominal initially 
 
-/* I2C based filament diameter sensor */
-#define I2C_FILAMENT_SENSOR
-#define I2C_FILAMENT_SENSOR_EXTRUDER                  (0U) /* Extruder number that is using filament sensor */
-#define I2C_FILAMENT_SENSOR_TO_NOZZLE_MM            (600U) /* Distance between the nozzle and the point where filament is measured */
-//#define I2C_FILAMENT_MINIMUM_DIAMETER_UM ((uint16_t)1000U) /* Minimum possible filament diameter in micrometers */
-//#define I2C_FILAMENT_MAXIMUM_DIAMETER_UM ((uint16_t)3000U) /* Maximum possible filament diameter in micrometers */
-#define I2C_FILAMENT_SENSOR_I2C_ADDRESS             (0x02) /* I2C address of the filament diameter sensor) */
-#define I2C_FILAMENT_SENSOR_EXPECTED_DIAMETER_UM  (1750U) /* Expected filament diameter in microns, usually 1750 (1.75mm) or 3000 (3.0mm) */
+//When using an LCD, uncomment the line below to display the Filament sensor data on the last line instead of status.  Status will appear for 5 sec.
+#define FILAMENT_LCD_DISPLAY
 
 #include "Configuration_adv.h"
 #include "thermistortables.h"
