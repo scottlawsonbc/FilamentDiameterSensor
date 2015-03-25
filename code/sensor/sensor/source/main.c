@@ -6,7 +6,7 @@ int32_t yPixels[TSL_PIXEL_COUNT];
 
 uint16_t MAIN_AveragingIterations = MAIN_DEFAULT_AVERAGING;
 FunctionalState MAIN_SensorState = DISABLE;
-float MAIN_FilamentDiameter_MM = 0;
+float MAIN_FilamentDiameter_MM = 1U;
 
 int main()
 {
@@ -17,7 +17,8 @@ int main()
 	DAC_SingleValue_Setup();
 	I2C_Config();
 
-	MAIN_SetSensorState(ENABLE);
+	//MAIN_SetSensorState(ENABLE);
+	uprintf("Initializing sensor\r\n");
 
 	while(1)
 	{
