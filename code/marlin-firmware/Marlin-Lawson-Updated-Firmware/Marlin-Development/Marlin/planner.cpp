@@ -848,6 +848,8 @@ void plan_buffer_line(const float &x, const float &y, const float &z, const floa
   #endif
   */
 
+/* ENPH 459 */
+/* Scott: I think this code updates the circular buffer for filament measurements */
 #ifdef FILAMENT_SENSOR
   //FMM update ring buffer used for delay with filament measurement
 

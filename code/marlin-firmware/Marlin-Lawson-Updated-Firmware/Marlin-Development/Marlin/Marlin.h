@@ -234,6 +234,8 @@ void setPwmFrequency(uint8_t pin, int val);
 extern float homing_feedrate[];
 extern bool axis_relative_modes[];
 extern int feedmultiply;
+/* ENPH 459 */
+/* These are the variables that are used to change extrusion multipliers */
 extern int extrudemultiply; // Sets extrude multiply factor (in percent) for all extruders
 extern bool volumetric_enabled;
 extern int extruder_multiply[EXTRUDERS]; // sets extrude multiply factor (in percent) for each extruder individually
@@ -266,6 +268,8 @@ extern unsigned char fanSpeedSoftPwm;
 #endif
 
 #ifdef FILAMENT_SENSOR
+/* ENPH 459 */
+/* Scott: These are the header file declarations for the filament sensor variables */
   extern float filament_width_nominal;  //holds the theoretical filament diameter ie., 3.00 or 1.75
   extern bool filament_sensor;  //indicates that filament sensor readings should control extrusion
   extern float filament_width_meas; //holds the filament diameter as accurately measured

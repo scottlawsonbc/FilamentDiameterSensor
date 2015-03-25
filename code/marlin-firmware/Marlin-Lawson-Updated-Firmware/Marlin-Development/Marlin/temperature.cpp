@@ -113,6 +113,8 @@ volatile int babystepsTodo[3] = { 0 };
 #endif
 
 #ifdef FILAMENT_SENSOR
+/* ENPH 459 */
+/* Scott: this stores raw filament width. Not sure why the guy uses a signed 16-bit integer */
 int current_raw_filwidth = 0;  //Holds measured filament diameter - one extruder only
 #endif
 //===========================================================================
@@ -737,6 +739,8 @@ void manage_heater() {
 #endif //TEMP_SENSOR_BED != 0
 
   // Control the extruder rate based on the width sensor
+/* ENPH 459 */
+/* Scott: This code is crucial. Changes extrusion rate based on width sensor */
 #ifdef FILAMENT_SENSOR
   if (filament_sensor)
   {
@@ -863,16 +867,11 @@ static void updateTemperaturesFromRawValues() {
 
 #ifdef FILAMENT_SENSOR
 
-// // Convert raw Filament Width to millimeters
-// float analog2widthFil() {
-//   return current_raw_filwidth;// / 1000.0;
-// }
-
-// REMOVE SCOTT
+/* ENPH 459 */
+/* Make sure I2C value is not converted as analog value */
 // Convert raw Filament Width to millimeters
 float analog2widthFil() {
   return current_raw_filwidth / 16383.0 * 5.0;
-  //return current_raw_filwidth;
 }
 
 // Convert raw Filament Width to a ratio
@@ -979,6 +978,8 @@ void tp_init()
   ANALOG_SELECT(TEMP_BED_PIN);
 #endif
 #if HAS_FILAMENT_SENSOR
+  /* ENPH 459 */
+  /* Don't need analog pin when using I2C */
   ANALOG_SELECT(FILWIDTH_PIN);
 #endif
 
@@ -1244,8 +1245,8 @@ enum TempState {
   MeasureTemp_2,
   PrepareTemp_3,
   MeasureTemp_3,
-  Prepare_FILWIDTH,
-  Measure_FILWIDTH,
+  Prepare_FILWIDTH, /* ENPH 459 */
+  Measure_FILWIDTH, /* ENPH 459 */
   StartupDelay // Startup, delay initial temp reading a tiny bit so the hardware can settle
 };
 
@@ -1290,6 +1291,7 @@ ISR(TIMER0_COMPB_vect) {
 #endif
 
 #if HAS_FILAMENT_SENSOR
+  /* ENPH 459 */
   static unsigned long raw_filwidth_value = 0;
 #endif
 
@@ -1528,14 +1530,18 @@ ISR(TIMER0_COMPB_vect) {
     break;
   case Prepare_FILWIDTH:
 #if HAS_FILAMENT_SENSOR
+    /* ENPH 459 */
+    /* Don't need ADC if using I2C */
     START_ADC(FILWIDTH_PIN);
 #endif
     lcd_buttons_update();
     temp_state = Measure_FILWIDTH;
     break;
   case Measure_FILWIDTH:
-// REMOVE SCOTT
 #if HAS_FILAMENT_SENSOR
+    /* ENPH 459 */
+    /* Scott: I think this is where the ADC is read and filament is stored as analog value */
+    /* Raw filament value appears to be filtered with IIR */
     // raw_filwidth_value += ADC;  //remove to use an IIR filter approach
     if (ADC > 102) { //check that ADC is reading a voltage > 0.5 volts, otherwise don't take in the data.
       raw_filwidth_value -= (raw_filwidth_value >> 7); //multiply raw_filwidth_value by 127/128
@@ -1576,20 +1582,11 @@ ISR(TIMER0_COMPB_vect) {
     } //!temp_meas_ready
 
     // Filament Sensor - can be read any time since IIR filtering is used
-// REMOVE SCOTT
  #if HAS_FILAMENT_SENSOR
+    /* ENPH 459 */
+    /* We don't need to bitshift if using I2C */
      current_raw_filwidth = raw_filwidth_value >> 10;  // Divide to get to 0-16384 range since we used 1/128 IIR filter approach
  #endif
-
-    // REMOVE SCOTT
-   // Wire.begin();
-   // Wire.beginTransmission(0x11);
-   // Wire.write(0x03);
-   // Wire.endTransmission();  
-    //Wire.requestFrom(0x11, 2);
-    //uint16_t a = ((uint16_t)Wire.read()) << 8;
-    //a |= ((uint16_t)Wire.read());
-    //current_raw_filwidth = ((float)a)/1000.0;
 
     temp_meas_ready = true;
     temp_count = 0;

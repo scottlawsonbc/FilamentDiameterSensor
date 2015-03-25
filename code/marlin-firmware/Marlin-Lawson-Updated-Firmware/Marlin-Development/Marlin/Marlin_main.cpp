@@ -53,6 +53,8 @@
 #include "language.h"
 #include "pins_arduino.h"
 #include "math.h"
+#include "i2c_filament_sensor.cpp" /* ENPH 459 */
+
 #define BABYSTEP_INVERT_Z false
 
 #ifdef BLINKM
@@ -364,14 +366,20 @@ int fanSpeed = 0;
 bool cancel_heatup = false;
 
 #ifdef FILAMENT_SENSOR
+  /* ENPH 459 */
+  /* Scott: These are the variable definitions for the filament sensor code */
   //Variables for Filament Sensor input 
   float filament_width_nominal=DEFAULT_NOMINAL_FILAMENT_DIA;  //Set nominal filament width, can be changed with M404 
   bool filament_sensor=false;  //M405 turns on filament_sensor control, M406 turns it off 
   float filament_width_meas=DEFAULT_MEASURED_FILAMENT_DIA; //Stores the measured filament diameter 
+  /* ENPH 459 */
+  /* Scott: Important to note that I have changed this to MM (hence the 10x multiplier), but it still says CM */
   signed char measurement_delay[10*MAX_MEASUREMENT_DELAY+1];  //ring buffer to delay measurement  store extruder factor after subtracting 100 
   int delay_index1=0;  //index into ring buffer
   int delay_index2=-1;  //index into ring buffer - set to -1 on startup to indicate ring buffer needs to be initialized
-  float delay_dist=0; //delay distance counter  
+  float delay_dist=0; //delay distance counter
+  /* ENPH 459 */
+  /* Scott: meas_delay_cm is actually mm, not cm. I quickly changed it to get higher resolution */  
   int meas_delay_cm = 10*MEASUREMENT_DELAY_CM;  //distance delay setting
 #endif
 
@@ -620,7 +628,6 @@ void servo_init()
   #endif
 }
 
-
 #define EXTRUDER_SELECT_PIN        34  
 #define RETRACT_BUTTON_FORWARD_PIN 30 // PC7
 #define RETRACT_BUTTON_REVERSE_PIN 31 // PC6
@@ -722,6 +729,10 @@ void setup()
     /* Set up extruder select pin */
     SET_INPUT(EXTRUDER_SELECT_PIN);
     WRITE(EXTRUDER_SELECT_PIN, 1);
+
+    /* ENPH 459 */
+    FIL_Init();                 /* Initialize I2C communication for filament sensor */
+    FIL_EnableFilamentSensor(); /* Instruct sensor to turn on */
 }
 
 void e0_adjust_step(const bool direction)
@@ -4359,6 +4370,8 @@ inline void gcode_M400() { st_synchronize(); }
   /**
    * M404: Display or set the nominal filament width (3mm, 1.75mm ) W<3.0>
    */
+   /* ENPH 459 */
+   /* Scott: This is the gcode command for setting the nominal filament diameter */
   inline void gcode_M404() {
     #if FILWIDTH_PIN > -1
       if (code_seen('W')) {
@@ -4374,6 +4387,8 @@ inline void gcode_M400() { st_synchronize(); }
   /**
    * M405: Turn on filament sensor for control
    */
+   /* ENPH 459 */
+   /* Scott: This is the gcode command for enabling sensor and setting sensor measurement delay */
   inline void gcode_M405() {
     if (code_seen('D')) meas_delay_cm = 10*code_value();
     if (meas_delay_cm > MAX_MEASUREMENT_DELAY) meas_delay_cm = MAX_MEASUREMENT_DELAY;
@@ -4391,6 +4406,8 @@ inline void gcode_M400() { st_synchronize(); }
 
     SERIAL_PROTOCOLPGM("Filament dia (measured mm):");
     SERIAL_PROTOCOL(filament_width_meas);
+    /* ENPH 459 */
+    /* Scott: Extrudemultiply is actually the wrong value to print to serial. I don't like this sensor code */
     SERIAL_PROTOCOLPGM("Extrusion ratio(%):");
     SERIAL_PROTOCOL(extrudemultiply);
   }
@@ -4398,6 +4415,8 @@ inline void gcode_M400() { st_synchronize(); }
   /**
    * M406: Turn off filament sensor for control
    */
+  /* ENPH 459 */
+  /* Scott: This is the gcode command for toggling the filament sensor on/off */
   inline void gcode_M406()
    { 
     filament_sensor = !filament_sensor;
@@ -4408,6 +4427,8 @@ inline void gcode_M400() { st_synchronize(); }
   /**
    * M407: Get measured filament diameter on serial output
    */
+  /* ENPH 459 */
+  /* Scott: This is the gcode command for printing the latest filament diameter measurement to serial */
   inline void gcode_M407() {
     SERIAL_PROTOCOLPGM("Filament dia (measured mm):"); 
     SERIAL_PROTOCOLLN(filament_width_meas);   
@@ -6064,12 +6085,16 @@ bool setTargetedHotend(int code){
   return false;
 }
 
+/* ENPH 459 */
+/* Scott: not sure if this is important */
 float calculate_volumetric_multiplier(float diameter) {
   if (!volumetric_enabled || diameter == 0) return 1.0;
   float d2 = diameter * 0.5;
   return 1.0 / (M_PI * d2 * d2);
 }
 
+/* ENPH 459 */
+/* Scott: not sure if this is important */
 void calculate_volumetric_multipliers() {
   for (int i=0; i<EXTRUDERS; i++)
     volumetric_multiplier[i] = calculate_volumetric_multiplier(filament_size[i]);

@@ -842,6 +842,11 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 //When using an LCD, uncomment the line below to display the Filament sensor data on the last line instead of status.  Status will appear for 5 sec.
 #define FILAMENT_LCD_DISPLAY
 
+
+
+
+
+
 #include "Configuration_adv.h"
 #include "thermistortables.h"
 
