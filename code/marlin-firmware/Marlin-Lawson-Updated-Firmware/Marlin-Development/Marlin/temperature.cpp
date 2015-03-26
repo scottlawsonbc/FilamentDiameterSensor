@@ -36,6 +36,7 @@
 #include "language.h"
 #include "Wire.h"
 #include "Sd2PinMap.h"
+#include "i2c_filament_sensor.h"
 
 //===========================================================================
 //================================== macros =================================
@@ -739,8 +740,8 @@ void manage_heater() {
 #endif //TEMP_SENSOR_BED != 0
 
   // Control the extruder rate based on the width sensor
-/* ENPH 459 */
-/* Scott: This code is crucial. Changes extrusion rate based on width sensor */
+  /* ENPH 459 */
+  /* Scott: This code is crucial. Changes extrusion rate based on width sensor */
 #ifdef FILAMENT_SENSOR
   if (filament_sensor)
   {
@@ -853,8 +854,11 @@ static void updateTemperaturesFromRawValues() {
 #ifdef TEMP_SENSOR_1_AS_REDUNDANT
   redundant_temperature = analog2temp(redundant_temperature_raw, 1);
 #endif
+  /* ENPH 459 */
+  /* Scott: potentially easy fix by calling diameter request here, especially since this is not an interrupt routine */
 #if HAS_FILAMENT_SENSOR
-  filament_width_meas = analog2widthFil();
+//  filament_width_meas = analog2widthFil();
+filament_width_meas = ((float)FIL_RequestDiameterMeasurementI2C_UM())/1000.0f;
 #endif
   //Reset the watchdog after we know we have a temperature measurement.
   watchdog_reset();
@@ -874,6 +878,8 @@ float analog2widthFil() {
   return current_raw_filwidth / 16383.0 * 5.0;
 }
 
+/* ENPH 459 */
+/* Scott: I think this is the critical function here */
 // Convert raw Filament Width to a ratio
 int widthFil_to_size_ratio() {
   float temp = filament_width_meas;
@@ -1582,11 +1588,11 @@ ISR(TIMER0_COMPB_vect) {
     } //!temp_meas_ready
 
     // Filament Sensor - can be read any time since IIR filtering is used
- #if HAS_FILAMENT_SENSOR
+#if HAS_FILAMENT_SENSOR
     /* ENPH 459 */
     /* We don't need to bitshift if using I2C */
-     current_raw_filwidth = raw_filwidth_value >> 10;  // Divide to get to 0-16384 range since we used 1/128 IIR filter approach
- #endif
+    current_raw_filwidth = raw_filwidth_value >> 10;  // Divide to get to 0-16384 range since we used 1/128 IIR filter approach
+#endif
 
     temp_meas_ready = true;
     temp_count = 0;
