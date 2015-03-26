@@ -53,7 +53,7 @@
 #include "language.h"
 #include "pins_arduino.h"
 #include "math.h"
-#include "i2c_filament_sensor.cpp" /* ENPH 459 */
+#include "i2c_filament_sensor.h" /* ENPH 459 */
 
 #define BABYSTEP_INVERT_Z false
 
@@ -732,7 +732,7 @@ void setup()
 
     /* ENPH 459 */
     FIL_Init();                 /* Initialize I2C communication for filament sensor */
-    FIL_EnableFilamentSensor(); /* Instruct sensor to turn on */
+    FIL_EnableFilamentSensorI2C(); /* Instruct sensor to turn on */
 }
 
 void e0_adjust_step(const bool direction)
