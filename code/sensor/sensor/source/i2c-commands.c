@@ -50,15 +50,15 @@ void COM_SendMeasurement()
 
 	/* Clear the ADDR flag */
 	I2C_ClearFlag(I2C, I2C_FLAG_ADDR);
-	COM_PrintI2CFlags();
+	//COM_PrintI2CFlags();
 	while(I2C_GetFlagStatus(I2C, I2C_FLAG_TXIS) == RESET)
 	{
 		if((timeout--) == 0) return;
 	}
 	I2C_ClearFlag(I2C, I2C_FLAG_TXIS);
-	COM_PrintI2CFlags();
+	//COM_PrintI2CFlags();
 	I2C_SendData(I2C, (uint8_t)(diameter >> 8));
-	COM_PrintI2CFlags();
+	//COM_PrintI2CFlags();
 	timeout = I2C_LONG_TIMEOUT;
 	while(I2C_GetFlagStatus(I2C, I2C_FLAG_TXE) == RESET)
 	{
@@ -73,9 +73,9 @@ void COM_SendMeasurement()
 		if((timeout--) == 0) return;
 	}
 	I2C_ClearFlag(I2C, I2C_FLAG_STOPF);
-	uprintf("Transmitted\r\n");
-	COM_PrintI2CFlags();
-	uprintf("Measurement has been transmitted via I2C!\r\n");
+	//uprintf("Transmitted\r\n");
+	//COM_PrintI2CFlags();
+	//uprintf("Measurement has been transmitted via I2C!\r\n");
 }
 
 /* Executes the specified I2C command */
