@@ -1,5 +1,5 @@
 #include "i2c-commands.h"
-
+#include "core_cmInstr.h"
 /* Set the number of averaging samples */
 void COM_SetAveraging(uint16_t samples)
 {
@@ -42,44 +42,59 @@ void COM_PrintI2CFlags()
 	uprintf("Flag: I2C_FLAG_BUSY:%i\r\n\r\n",    I2C_GetFlagStatus(I2C, I2C_FLAG_BUSY));
 }
 
-/* Send the Master the latest filament diameter measurement */
+#define WAIT_FOR(flag, condition) {uint32_t timeout = I2C_LONG_TIMEOUT; while(I2C_GetFlagStatus(I2C, flag) != condition){ if((timeout--) == 0){uprintf("I2C timeout. Flags:\r\n"); COM_PrintI2CFlags(); return;} }}
+
 void COM_SendMeasurement()
 {
 	uint16_t diameter = (uint16_t)(MAIN_FilamentDiameter_MM * 1000.0);
-	uint16_t timeout = I2C_LONG_TIMEOUT;
+	uint32_t timeout = I2C_LONG_TIMEOUT;
 
-	/* Clear the ADDR flag */
-	I2C_ClearFlag(I2C, I2C_FLAG_ADDR);
+	/* Wait for ADDR */
+	uprintf("Wait for ADDR\r\n");
 	//COM_PrintI2CFlags();
-	while(I2C_GetFlagStatus(I2C, I2C_FLAG_TXIS) == RESET)
-	{
-		if((timeout--) == 0) return;
-	}
+	WAIT_FOR(I2C_FLAG_ADDR, SET);
+	I2C_ClearFlag(I2C, I2C_FLAG_ADDR);
+
+	/* Wait for TXIS */
+	uprintf("Wait for TXIS\r\n");
+	//COM_PrintI2CFlags();
+	WAIT_FOR(I2C_FLAG_TXIS, SET);
 	I2C_ClearFlag(I2C, I2C_FLAG_TXIS);
+
+	/* Send first byte */
+	uprintf("Send first byte\r\n");
 	//COM_PrintI2CFlags();
 	I2C_SendData(I2C, (uint8_t)(diameter >> 8));
+	uprintf("Wait for TXE\r\n");
 	//COM_PrintI2CFlags();
-	timeout = I2C_LONG_TIMEOUT;
-	while(I2C_GetFlagStatus(I2C, I2C_FLAG_TXE) == RESET)
-	{
-		if((timeout--) == 0) return;
-	}
-	I2C_SendData(I2C, (uint8_t)(diameter));
+	WAIT_FOR(I2C_FLAG_TXE, SET);
+	//COM_PrintI2CFlags();
 
-	/* Wait for not busy */
-	timeout = I2C_LONG_TIMEOUT;
-	while(I2C_GetFlagStatus(I2C, I2C_FLAG_STOPF) == RESET)
-	{
-		if((timeout--) == 0) return;
-	}
-	I2C_ClearFlag(I2C, I2C_FLAG_STOPF);
-	//uprintf("Transmitted\r\n");
+	/* Send second byte */
+	uprintf("Send second byte\r\n");
 	//COM_PrintI2CFlags();
-	//uprintf("Measurement has been transmitted via I2C!\r\n");
+	I2C_SendData(I2C,(uint8_t)diameter);
+	uprintf("Wait for TXE\r\n");
+	//COM_PrintI2CFlags();
+	WAIT_FOR(I2C_FLAG_TXE, SET);
+	//COM_PrintI2CFlags();
+
+	/* Wait for NACKF */
+	uprintf("Wait for NACKF\r\n");
+	//COM_PrintI2CFlags();
+	WAIT_FOR(I2C_FLAG_NACKF, SET);
+	I2C_ClearFlag(I2C, I2C_FLAG_NACKF);
+
+	/* Wait for STOPF */
+	uprintf("Wait for STOPF\r\n");
+	//COM_PrintI2CFlags();
+	WAIT_FOR(I2C_FLAG_STOPF, SET);
+	I2C_ClearFlag(I2C, I2C_FLAG_STOPF);
+
 }
 
 /* Executes the specified I2C command */
-void COM_ExecuteCommand(uint8_t command, uint8_t* data, uint8_t numberOfBytes)
+void COM_ExecuteCommand(__IO uint8_t command, __IO uint8_t* data, uint8_t numberOfBytes)
 {
 	switch(command)
 	{
@@ -93,6 +108,7 @@ void COM_ExecuteCommand(uint8_t command, uint8_t* data, uint8_t numberOfBytes)
 		break;
 	case COM_REQUEST_MEASUREMENT:
 		COM_SendMeasurement();
+		//		COM_SendMeasurementIT();
 		uprintf("Command: [Request Measurement] received via I2C\r\n");
 		break;
 	case COM_AVERAGING_SAMPLES:

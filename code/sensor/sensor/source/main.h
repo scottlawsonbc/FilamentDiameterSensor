@@ -18,7 +18,7 @@
 #include "i2c.h"
 
 #define USART1_BAUDRATE (115200U)
-#define MAIN_DEFAULT_AVERAGING (3000U)
+#define MAIN_DEFAULT_AVERAGING (1000U)
 
 /* The number of measurements to average before computing the diameter */
 extern uint16_t MAIN_AveragingIterations;

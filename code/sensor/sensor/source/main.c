@@ -6,7 +6,7 @@ int32_t yPixels[TSL_PIXEL_COUNT];
 
 uint16_t MAIN_AveragingIterations = MAIN_DEFAULT_AVERAGING;
 FunctionalState MAIN_SensorState = DISABLE;
-float MAIN_FilamentDiameter_MM = 1U;
+float MAIN_FilamentDiameter_MM = 1.33f;
 
 int main()
 {
@@ -17,7 +17,7 @@ int main()
 	DAC_SingleValue_Setup();
 	I2C_Config();
 
-	//MAIN_SetSensorState(ENABLE);
+	MAIN_SetSensorState(ENABLE);
 	uprintf("Initializing sensor\r\n");
 
 	while(1)
@@ -48,6 +48,7 @@ int main()
 				}
 				else
 				{
+					uprintf("Sensor invalid\r\n");
 					i -= 1; /* Reject the measurement */
 				}
 				/* Display the filament validity detection on the LEDs */
@@ -55,7 +56,7 @@ int main()
 				LED_Write(3, (BitAction)(edge_y.IsValid));
 
 				/* Check the I2C bus to see if a command was recieved */
-				I2C_CheckReceive();
+				//I2C_CheckReceive();
 			}
 
 			/* Divide the sum by the number of sampling iterations to get the averaged data */
@@ -76,8 +77,9 @@ int main()
 		}
 		else
 		{
+			uprintf("Sensor disabled\r\n");
 			/* Check the I2C bus to see if data was received */
-			I2C_CheckReceive();
+			//I2C_CheckReceive();
 		}
 	}
 }

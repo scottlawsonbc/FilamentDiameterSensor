@@ -9,7 +9,6 @@
 #define COM_REQUEST_MEASUREMENT             (0x03U)
 #define COM_AVERAGING_SAMPLES               (0x04U)
 
-
-extern void COM_ExecuteCommand(uint8_t command, uint8_t* data, uint8_t numberOfBytes);
+extern void COM_ExecuteCommand(__IO uint8_t command, __IO uint8_t* data, uint8_t numberOfBytes);
 
 #endif

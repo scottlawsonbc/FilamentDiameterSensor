@@ -3,13 +3,22 @@
 #include "i2c-commands.h"
 
 __IO uint32_t I2C_Timeout = I2C_LONG_TIMEOUT; 
-uint8_t I2C_RX_Packets[I2C_RX_PACKET_BUFFER_LENGTH], I2C_RX_Index;
+volatile __IO uint8_t I2C_RX_Packets[I2C_RX_PACKET_BUFFER_LENGTH], I2C_RX_Index;
+volatile __IO uint8_t I2C_TX_Packets[I2C_TX_PACKET_BUFFER_LENGTH], I2C_TX_Index;
+volatile __IO uint8_t I2C_IgnoreStop;
 
-uint32_t I2C_TIMEOUT_UserCallback()
+void I2C_PrintInterruptStatus()
 {
+	uprintf("I2C_IT_ERRI %i\r\n", I2C_GetITStatus(I2C, I2C_IT_ERRI));
+	uprintf("I2C_IT_TCI %i\r\n", I2C_GetITStatus(I2C, I2C_IT_TCI));
+	uprintf("I2C_IT_STOPI %i\r\n", I2C_GetITStatus(I2C, I2C_IT_STOPI));
+	uprintf("I2C_IT_NACKI %i\r\n", I2C_GetITStatus(I2C, I2C_IT_NACKI));
+	uprintf("I2C_IT_ADDRI %i\r\n", I2C_GetITStatus(I2C, I2C_IT_ADDRI));
+	uprintf("I2C_IT_RXI %i\r\n", I2C_GetITStatus(I2C, I2C_IT_RXI));
+	uprintf("I2C_IT_TXI %i\r\n", I2C_GetITStatus(I2C, I2C_IT_TXI));
 }
 
-void I2C_ProcessCommand(uint8_t* receivedBytes, uint8_t numberOfBytes)
+void I2C_ProcessCommand(__IO uint8_t* receivedBytes, __IO uint8_t numberOfBytes)
 {
 	uint8_t i;
 	uprintf("Command received!\r\n");
@@ -18,6 +27,54 @@ void I2C_ProcessCommand(uint8_t* receivedBytes, uint8_t numberOfBytes)
 		uprintf("Received byte: %i\r\n", receivedBytes[i]);
 	}
 	COM_ExecuteCommand(receivedBytes[0], &receivedBytes[1], numberOfBytes-1);
+}
+
+void I2C1_EV_IRQHandler(void)
+{
+	/* Address matched */
+	if (I2C_GetITStatus(I2C, I2C_IT_ADDRI))
+	{
+		uprintf("ADDRI\r\n");
+		I2C_ClearITPendingBit(I2C, I2C_IT_ADDRI);
+	}
+
+	/* Received byte */
+	if (I2C_GetITStatus(I2C, I2C_IT_RXI))
+	{
+		I2C_RX_Packets[I2C_RX_Index] = I2C_ReceiveData(I2C);
+		uprintf("RXI: %i\r\n", I2C_RX_Packets[I2C_RX_Index]);
+		if (I2C_RX_Index < I2C_RX_PACKET_BUFFER_LENGTH-1) 
+		{
+			I2C_RX_Index++;
+		}
+		I2C_ClearITPendingBit(I2C, I2C_IT_RXI);
+	}
+
+	/* Stop condition detected */
+	if (I2C_GetITStatus(I2C, I2C_IT_STOPI))
+	{
+		uprintf("STOPI\r\n");
+		I2C_ClearITPendingBit(I2C, I2C_IT_STOPI);
+		I2C_ProcessCommand(I2C_RX_Packets, I2C_RX_Index+1);
+		I2C_RX_Index = 0;
+	}
+
+	///* Transmit interrupt status */
+	//if (I2C_GetITStatus(I2C, I2C_IT_TXI))
+	//{
+	//	if (I2C_TX_Index > 0)
+	//	{
+	//		I2C_SendData(I2C, I2C_TX_Packets[I2C_TX_Index]);
+	//		I2C_TX_Index--;
+	//		uprintf("Transmitted packet\r\n");
+	//		I2C_ClearITPendingBit(I2C, I2C_IT_TXI);
+	//	}
+	//}
+	//I2C_PrintInterruptStatus();
+}
+
+uint32_t I2C_TIMEOUT_UserCallback()
+{
 }
 
 void I2C_CheckReceive()
@@ -51,14 +108,33 @@ void I2C_CheckReceive()
 	}
 }
 
+void I2C_InterruptConfig()
+{
+	NVIC_InitTypeDef NVIC_InitStructure;
+
+	/* Configure the I2C event priority */
+	NVIC_InitStructure.NVIC_IRQChannel                   = I2C_INTERRUPT;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority        = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd                = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
+
+	/* Enable the interrupt */
+	//uint32_t interruptFlags = I2C_IT_ADDRI | I2C_IT_RXI | I2C_IT_TXI | I2C_IT_STOPI | I2C_IT_TCI | I2C_IT_ERRI;
+	uint32_t interruptFlags = I2C_IT_ADDRI | I2C_IT_RXI | I2C_IT_STOPI;
+	I2C_ITConfig(I2C, interruptFlags, ENABLE);
+}
+
 void I2C_Config()
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 	EXTI_InitTypeDef EXTI_InitStructure;
 	I2C_InitTypeDef  I2C_InitStructure;
 
-	/* Reset the RX packet index */
+	/* Reset TX, RX, stop */
 	I2C_RX_Index = 0;
+	I2C_TX_Index = 0;
+	I2C_IgnoreStop = 0;
 
 	/* Enable the I2C periph */
 	RCC_APB1PeriphClockCmd(I2C_CLK, ENABLE);
@@ -136,6 +212,8 @@ void I2C_Config()
 
 	GPIO_InitStructure.GPIO_Pin = I2C_INT2_PIN;
 	GPIO_Init(I2C_INT2_GPIO_PORT, &GPIO_InitStructure);
+
+	I2C_InterruptConfig();
 }  
 
 uint16_t I2C_Write(uint8_t deviceAddressess, uint8_t registerAddress, uint8_t* dataPointer)
@@ -258,21 +336,3 @@ uint16_t I2C_Read(uint8_t deviceAddress, uint8_t registerAddress, uint8_t* dataP
 	/* If all operations OK */
 	return I2C_OK;  
 }  
-
-
-
-void I2C_TestWrite(uint8_t reg)
-{
-	uint8_t ctrl1 = 0x00;
-	//I2C_Write(0x32, reg, &ctrl1); 
-	I2C_Write(0x02, reg, &ctrl1); 
-}
-
-uint8_t I2C_TestRead()
-{
-	uint8_t tmpreg;
-	I2C_Read(0x02, 0x02, &tmpreg, 1);
-	//I2C_Read(0x3C, 0x09, &tmpreg, 1);
-	return tmpreg;
-}
-

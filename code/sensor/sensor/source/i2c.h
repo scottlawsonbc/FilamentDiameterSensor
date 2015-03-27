@@ -17,10 +17,12 @@
 #define I2C_FAIL                     ((uint32_t) 0)
 
 #define I2C_RX_PACKET_BUFFER_LENGTH (10U)
+#define I2C_TX_PACKET_BUFFER_LENGTH (10U)
 
 /* Low-level pin definitions */
 #define I2C                       I2C1
 #define I2C_CLK                   RCC_APB1Periph_I2C1
+#define I2C_INTERRUPT             I2C1_EV_IRQn
 
 #define I2C_SCK_PIN               GPIO_Pin_6                  /* PB.06 */
 #define I2C_SCK_GPIO_PORT         GPIOB                       /* GPIOB */
@@ -64,6 +66,10 @@ extern uint16_t I2C_Read(uint8_t deviceAddress, uint8_t registerAddress, uint8_t
 extern void I2C_TestWrite(uint8_t reg);
 extern uint8_t I2C_TestRead(void);
 extern void I2C_CheckReceive();
+
+extern __IO uint8_t I2C_RX_Packets[I2C_RX_PACKET_BUFFER_LENGTH], I2C_RX_Index;
+extern __IO uint8_t I2C_TX_Packets[I2C_TX_PACKET_BUFFER_LENGTH], I2C_TX_Index;
+extern __IO uint8_t I2C_IgnoreStop;
 
 #endif /* I2C_H */
 
