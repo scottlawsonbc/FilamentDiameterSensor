@@ -16,6 +16,7 @@
 #include "opamp.h"
 #include "geometry.h"
 #include "i2c.h"
+#include "buffer.h"
 
 #define USART1_BAUDRATE (115200U)
 #define MAIN_DEFAULT_AVERAGING (1000U)
@@ -31,6 +32,9 @@ extern float MAIN_FilamentDiameter_MM;
 
 /* The expected filament diameter */
 extern float MAIN_NominalFilamentDiameter_MM;
+
+/* The filament length between the sensor and extruder (equal to buffer size) */
+extern const uint16_t MAIN_FilamentBufferDistance_MM;
 
 /* Turn the sensor on or off */
 extern void MAIN_SetSensorState(FunctionalState state);

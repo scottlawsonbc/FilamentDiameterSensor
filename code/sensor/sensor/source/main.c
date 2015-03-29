@@ -8,6 +8,7 @@ uint16_t MAIN_AveragingIterations = MAIN_DEFAULT_AVERAGING;
 FunctionalState MAIN_SensorState = DISABLE;
 float MAIN_FilamentDiameter_MM = 1.33f;
 float MAIN_NominalFilamentDiameter_MM = 1.75f;
+const uint16_t MAIN_FilamentBufferDistance_MM = (600U);
 
 int main()
 {
