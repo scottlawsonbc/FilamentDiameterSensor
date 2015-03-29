@@ -13,5 +13,6 @@ extern void USART1_Send(char *data);
 extern void USART1_SendLine(char *data);
 
 extern void uprintf(const char *msg, ... );
+extern void cprintf(const char *msg, ... );
 
 #endif

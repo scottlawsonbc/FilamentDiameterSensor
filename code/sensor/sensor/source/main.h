@@ -29,6 +29,9 @@ extern FunctionalState MAIN_SensorState;
 /* The most recent valid filament diameter measurement */
 extern float MAIN_FilamentDiameter_MM;
 
+/* The expected filament diameter */
+extern float MAIN_NominalFilamentDiameter_MM;
+
 /* Turn the sensor on or off */
 extern void MAIN_SetSensorState(FunctionalState state);
 

@@ -72,6 +72,7 @@ int main()
 			/* Update the most recent filament diameter measurement */			
 			MAIN_FilamentDiameter_MM = diameter;
 			uprintf("Diameter: %f\r\n", diameter);
+			cprintf("Diameter %f\r\n", diameter);
 			/* Set analog output to converted filament diameter */
 			DAC_SetChannel1Data(DAC_Align_12b_R, (uint16_t)((diameter*1000.0)*(4096.0/3000.0)));
 		}

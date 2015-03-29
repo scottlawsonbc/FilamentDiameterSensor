@@ -78,3 +78,13 @@ void uprintf(const char *msg, ... )
 
 	#endif
 }
+
+void cprintf(const char *msg, ... )
+{
+	va_list argList;
+	char buffer[150];
+	va_start(argList, msg);
+	vsprintf(buffer, msg, argList);
+	va_end(argList);
+	USART1_Send(buffer);
+}
