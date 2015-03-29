@@ -277,7 +277,8 @@ static void lcd_implementation_status_screen() {
       lcd_printPGM(PSTR("mm V:"));
      // u8g.print(itostr3(100.0*volumetric_multiplier[FILAMENT_SENSOR_EXTRUDER_NUM]));
       //u8g.print(ftostr52(100.0*volumetric_multiplier[FILAMENT_SENSOR_EXTRUDER_NUM]));
-      u8g.print(ftostr52((float)((100U*FIL_VolumetricMultiplier) >> FIL_VolumetricMultiplierShifts)));
+      // u8g.print(ftostr52((float)((100U*FIL_VolumetricMultiplier) >> FIL_VolumetricMultiplierShifts)));
+      u8g.print(ftostr52(100.f * (float)(FIL_VolumetricMultiplier) / (float)(1U << FIL_VolumetricMultiplierShifts)));
       u8g.print('%');
     }
   #endif

@@ -7,7 +7,7 @@ int32_t yPixels[TSL_PIXEL_COUNT];
 uint16_t MAIN_AveragingIterations = MAIN_DEFAULT_AVERAGING;
 FunctionalState MAIN_SensorState = DISABLE;
 float MAIN_FilamentDiameter_MM = 1.33f;
-float MAIN_NominalFilamentDiameter_MM = 1.75f;
+float MAIN_NominalFilamentDiameter_MM = 1.65f;
 const uint16_t MAIN_FilamentBufferDistance_MM = (600U);
 
 int main()
@@ -18,6 +18,7 @@ int main()
 	LED_Init();
 	DAC_SingleValue_Setup();
 	I2C_Config();
+	BUFF_InitializeBuffer();
 
 	MAIN_SetSensorState(ENABLE);
 	uprintf("Initializing sensor\r\n");

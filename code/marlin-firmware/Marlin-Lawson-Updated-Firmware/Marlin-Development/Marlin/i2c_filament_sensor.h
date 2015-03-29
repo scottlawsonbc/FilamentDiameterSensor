@@ -16,7 +16,7 @@
 /* Divisor for FIL_VolumetricMultiplier in terms of bitshifts */
 extern const uint16_t FIL_VolumetricMultiplierShifts;
 /* Determines how much to compensate for fluctuations in filament diameter */
-extern volatile uint16_t FIL_VolumetricMultiplier;
+extern volatile uint32_t FIL_VolumetricMultiplier;
 /* Stores the most recent filament diameter measurement */
 extern float FIL_MeasuredFilamentDiameter_MM;
 /* Position that the volumetric multiplier was last updated */

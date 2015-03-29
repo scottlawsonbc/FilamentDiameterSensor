@@ -51,46 +51,72 @@ void COM_SendMeasurement()
 
 	/* Wait for ADDR */
 	uprintf("Wait for ADDR\r\n");
-	//COM_PrintI2CFlags();
 	WAIT_FOR(I2C_FLAG_ADDR, SET);
 	I2C_ClearFlag(I2C, I2C_FLAG_ADDR);
 
 	/* Wait for TXIS */
 	uprintf("Wait for TXIS\r\n");
-	//COM_PrintI2CFlags();
 	WAIT_FOR(I2C_FLAG_TXIS, SET);
 	I2C_ClearFlag(I2C, I2C_FLAG_TXIS);
 
 	/* Send first byte */
 	uprintf("Send first byte\r\n");
-	//COM_PrintI2CFlags();
 	I2C_SendData(I2C, (uint8_t)(diameter >> 8));
 	uprintf("Wait for TXE\r\n");
-	//COM_PrintI2CFlags();
 	WAIT_FOR(I2C_FLAG_TXE, SET);
-	//COM_PrintI2CFlags();
 
 	/* Send second byte */
 	uprintf("Send second byte\r\n");
-	//COM_PrintI2CFlags();
 	I2C_SendData(I2C,(uint8_t)diameter);
 	uprintf("Wait for TXE\r\n");
-	//COM_PrintI2CFlags();
 	WAIT_FOR(I2C_FLAG_TXE, SET);
-	//COM_PrintI2CFlags();
 
 	/* Wait for NACKF */
 	uprintf("Wait for NACKF\r\n");
-	//COM_PrintI2CFlags();
 	WAIT_FOR(I2C_FLAG_NACKF, SET);
 	I2C_ClearFlag(I2C, I2C_FLAG_NACKF);
 
 	/* Wait for STOPF */
 	uprintf("Wait for STOPF\r\n");
-	//COM_PrintI2CFlags();
 	WAIT_FOR(I2C_FLAG_STOPF, SET);
 	I2C_ClearFlag(I2C, I2C_FLAG_STOPF);
+}
 
+void COM_SendVolumetricMultiplier(uint16_t volumetricMultiplier)
+{
+	uint32_t timeout = I2C_LONG_TIMEOUT;
+
+	/* Wait for ADDR */
+	uprintf("Wait for ADDR\r\n");
+	WAIT_FOR(I2C_FLAG_ADDR, SET);
+	I2C_ClearFlag(I2C, I2C_FLAG_ADDR);
+
+	/* Wait for TXIS */
+	uprintf("Wait for TXIS\r\n");
+	WAIT_FOR(I2C_FLAG_TXIS, SET);
+	I2C_ClearFlag(I2C, I2C_FLAG_TXIS);
+
+	/* Send first byte */
+	uprintf("Send first byte\r\n");
+	I2C_SendData(I2C, (uint8_t)(volumetricMultiplier >> 8));
+	uprintf("Wait for TXE\r\n");
+	WAIT_FOR(I2C_FLAG_TXE, SET);
+
+	/* Send second byte */
+	uprintf("Send second byte\r\n");
+	I2C_SendData(I2C,(uint8_t)volumetricMultiplier);
+	uprintf("Wait for TXE\r\n");
+	WAIT_FOR(I2C_FLAG_TXE, SET);
+
+	/* Wait for NACKF */
+	uprintf("Wait for NACKF\r\n");
+	WAIT_FOR(I2C_FLAG_NACKF, SET);
+	I2C_ClearFlag(I2C, I2C_FLAG_NACKF);
+
+	/* Wait for STOPF */
+	uprintf("Wait for STOPF\r\n");
+	WAIT_FOR(I2C_FLAG_STOPF, SET);
+	I2C_ClearFlag(I2C, I2C_FLAG_STOPF);
 }
 
 /* Executes the specified I2C command */
@@ -108,8 +134,11 @@ void COM_ExecuteCommand(__IO uint8_t command, __IO uint8_t* data, uint8_t number
 		break;
 	case COM_REQUEST_MEASUREMENT:
 		COM_SendMeasurement();
-		//		COM_SendMeasurementIT();
 		uprintf("Command: [Request Measurement] received via I2C\r\n");
+		break;
+	case COM_UPDATE_VOLUMETRIC_MULTIPLIER:
+		COM_SendVolumetricMultiplier(BUFF_UpdateBufferMultiplier());
+		uprintf("Command: [Update Volumetric Multiplier] received via I2C\r\n");
 		break;
 	case COM_AVERAGING_SAMPLES:
 		COM_SetAveraging(((uint16_t)data[0] << 8) & (uint16_t)data[1]);

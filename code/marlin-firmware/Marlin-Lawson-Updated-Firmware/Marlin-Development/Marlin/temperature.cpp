@@ -856,6 +856,9 @@ static void updateTemperaturesFromRawValues() {
 #endif
   /* ENPH 459 */
   /* Scott: potentially easy fix by calling diameter request here, especially since this is not an interrupt routine */
+#ifdef I2C_FILAMENT_SENSOR
+FIL_MeasuredFilamentDiameter_MM = ((float)FIL_RequestDiameterMeasurementI2C_UM())/1000.0f;
+#endif
 #if HAS_FILAMENT_SENSOR
 //  filament_width_meas = analog2widthFil();
 filament_width_meas = ((float)FIL_RequestDiameterMeasurementI2C_UM())/1000.0f;

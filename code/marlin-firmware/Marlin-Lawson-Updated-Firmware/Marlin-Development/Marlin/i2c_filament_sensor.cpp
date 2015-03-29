@@ -1,7 +1,7 @@
 #include "i2c_filament_sensor.h"
 
-const uint16_t FIL_VolumetricMultiplierShifts = 14;
-volatile uint16_t FIL_VolumetricMultiplier;
+const uint16_t FIL_VolumetricMultiplierShifts = 10;
+volatile uint32_t FIL_VolumetricMultiplier;
 volatile float FIL_LastExtruderPosition_MM;
 float FIL_MeasuredFilamentDiameter_MM;
 
@@ -12,6 +12,7 @@ void FIL_Init()
     FIL_MeasuredFilamentDiameter_MM = 0.0f;
     FIL_LastExtruderPosition_MM = 0.0f;
     Wire.begin();
+    FIL_UpdateVolumetricMultiplierI2C();
 }
 
 /* Instructs the filament sensor to turn on and start taking measurements */
