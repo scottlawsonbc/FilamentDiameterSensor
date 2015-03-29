@@ -57,6 +57,7 @@
 #include "temperature.h"
 #include "ultralcd.h"
 #include "language.h"
+#include "i2c_filament_sensor.h"
 
 //===========================================================================
 //============================= public variables ============================
@@ -605,6 +606,9 @@ void plan_buffer_line(const float &x, const float &y, const float &z, const floa
   /* Volumetric multiplier */
   block->steps_z = labs(target[Z_AXIS] - position[Z_AXIS]);
   block->steps_e = labs(target[E_AXIS] - position[E_AXIS]);
+  /* Change the extrusion percentage to account for filament diameter fluctuations */
+  block->steps_e *= FIL_VolumetricMultiplier;
+  block->steps_e = block->steps_e >> FIL_VolumetricMultiplierShifts;
   block->steps_e *= volumetric_multiplier[active_extruder];
   block->steps_e *= extrudemultiply;
   block->steps_e /= 100;
@@ -807,8 +811,6 @@ void plan_buffer_line(const float &x, const float &y, const float &z, const floa
   block->nominal_speed = block->millimeters * inverse_second; // (mm/sec) Always > 0
   block->nominal_rate = ceil(block->step_event_count * inverse_second); // (step/sec) Always > 0
 
-/* ENPH 459 */
-/* Scott: I think this code updates the circular buffer for filament measurements */
 #ifdef FILAMENT_SENSOR
   //FMM update ring buffer used for delay with filament measurement
 

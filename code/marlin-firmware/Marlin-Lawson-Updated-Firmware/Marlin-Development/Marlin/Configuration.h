@@ -826,7 +826,8 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
  * Note may require analog pins to be defined for different motherboards
  **********************************************************************/
 // Uncomment below to enable
-#define FILAMENT_SENSOR
+//#define FILAMENT_SENSOR
+#define I2C_FILAMENT_SENSOR
 
 #define FILAMENT_SENSOR_EXTRUDER_NUM	1  //The number of the extruder that has the filament sensor (0,1,2)
 #define MEASUREMENT_DELAY_CM			60  //measurement delay in cm.  This is the distance from filament sensor to middle of barrel
@@ -841,11 +842,6 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 
 //When using an LCD, uncomment the line below to display the Filament sensor data on the last line instead of status.  Status will appear for 5 sec.
 #define FILAMENT_LCD_DISPLAY
-
-
-
-
-
 
 #include "Configuration_adv.h"
 #include "thermistortables.h"

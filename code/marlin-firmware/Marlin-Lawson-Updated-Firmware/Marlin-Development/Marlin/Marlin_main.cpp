@@ -910,6 +910,17 @@ void z_adjust_button_update()
     }
 }
 
+/* Updates the filament extrusion multiplier if the extruder has moved > 1mm */
+void update_filament_multiplier()
+{
+  /* Check if extruder position has moved more than 1mm since last update */
+  if(current_position[E_AXIS] > FIL_LastExtruderPosition_MM + 1.0f)
+  {
+    /* Increment last extruder position and update multiplier */
+    FIL_LastExtruderPosition_MM += 1.0f;
+    FIL_UpdateVolumetricMultiplierI2C();
+  }
+}
 
 void loop()
 {
@@ -958,6 +969,7 @@ void loop()
   lcd_update();
       retract_button_update();
     z_adjust_button_update();
+    update_filament_multiplier();
 }
 
 void get_command()

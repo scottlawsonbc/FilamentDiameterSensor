@@ -35,7 +35,7 @@
 #include "dogm_font_data_marlin.h"
 #include "ultralcd.h"
 #include "ultralcd_st7920_u8glib_rrd.h"
-
+#include "i2c_filament_sensor.h"
 /* Russian language not supported yet, needs custom font
 
 #ifdef LANGUAGE_RU
@@ -273,10 +273,11 @@ static void lcd_implementation_status_screen() {
     }
     else {
       lcd_printPGM(PSTR("F: "));
-      u8g.print(ftostr12ns(filament_width_meas));
+      u8g.print(ftostr12ns(FIL_MeasuredFilamentDiameter_MM));
       lcd_printPGM(PSTR("mm V:"));
      // u8g.print(itostr3(100.0*volumetric_multiplier[FILAMENT_SENSOR_EXTRUDER_NUM]));
-      u8g.print(ftostr52(100.0*volumetric_multiplier[FILAMENT_SENSOR_EXTRUDER_NUM]));
+      //u8g.print(ftostr52(100.0*volumetric_multiplier[FILAMENT_SENSOR_EXTRUDER_NUM]));
+      u8g.print(ftostr52((float)((100U*FIL_VolumetricMultiplier) >> FIL_VolumetricMultiplierShifts)));
       u8g.print('%');
     }
   #endif
