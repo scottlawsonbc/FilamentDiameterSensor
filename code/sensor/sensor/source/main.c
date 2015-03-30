@@ -7,8 +7,16 @@ int32_t yPixels[TSL_PIXEL_COUNT];
 uint16_t MAIN_AveragingIterations = MAIN_DEFAULT_AVERAGING;
 FunctionalState MAIN_SensorState = DISABLE;
 float MAIN_FilamentDiameter_MM = 1.33f;
-float MAIN_NominalFilamentDiameter_MM = 1.65f;
+float MAIN_NominalFilamentDiameter_MM = 1.75f;
 const uint16_t MAIN_FilamentBufferDistance_MM = (600U);
+
+/* Computes an IIR filtered filament diameter to prevent step changes to measured values */
+float MAIN_IIRFilter(float input)
+{
+	float currentValue = ((MAIN_IIR_FILTER_SAMPLES-MAIN_IIR_FILTER_INPUT_WEIGHT)*MAIN_FilamentDiameter_MM);
+	float newValue = (MAIN_IIR_FILTER_INPUT_WEIGHT)*input;
+	return (currentValue + newValue) / MAIN_IIR_FILTER_SAMPLES;
+}
 
 int main()
 {
@@ -73,7 +81,8 @@ int main()
 			/* Compute the filament diameter */
 			float diameter = GEO_Filament_Diameter_MM(x_edge_sum, y_edge_sum);
 			/* Update the most recent filament diameter measurement */			
-			MAIN_FilamentDiameter_MM = diameter;
+			//MAIN_FilamentDiameter_MM = diameter;
+			MAIN_FilamentDiameter_MM = MAIN_IIRFilter(diameter);
 			uprintf("Diameter: %f\r\n", diameter);
 			cprintf("Diameter %f\r\n", diameter);
 			/* Set analog output to converted filament diameter */
@@ -82,6 +91,7 @@ int main()
 		else
 		{
 			uprintf("Sensor disabled\r\n");
+			DelayMs(1000);
 			/* Check the I2C bus to see if data was received */
 			//I2C_CheckReceive();
 		}

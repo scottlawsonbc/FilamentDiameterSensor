@@ -19,7 +19,11 @@
 #include "buffer.h"
 
 #define USART1_BAUDRATE (115200U)
-#define MAIN_DEFAULT_AVERAGING (1000U)
+#define MAIN_DEFAULT_AVERAGING (100U)
+
+/* IIR filter reduces sudden large changes in measured filament diameter */
+#define MAIN_IIR_FILTER_SAMPLES (40U)
+#define MAIN_IIR_FILTER_INPUT_WEIGHT (1U)
 
 /* The number of measurements to average before computing the diameter */
 extern uint16_t MAIN_AveragingIterations;
