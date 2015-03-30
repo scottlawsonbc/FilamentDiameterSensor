@@ -2638,6 +2638,7 @@ inline void gcode_G92() {
       if (i == E_AXIS) {
         current_position[i] = code_value();
         plan_set_e_position(current_position[E_AXIS]);
+        FIL_LastExtruderPosition_MM  = current_position[E_AXIS];
       }
       else {
         current_position[i] = code_value() +

@@ -85,6 +85,7 @@
     <ClCompile Include="..\..\..\..\..\..\AppData\Local\VisualGDB\EmbeddedBSPs\arm-eabi\com.sysprogs.arm.stm32\STM32F30xxx\STM32F30x_StdPeriph_Driver\src\stm32f30x_tim.c" />
     <ClCompile Include="..\..\..\..\..\..\AppData\Local\VisualGDB\EmbeddedBSPs\arm-eabi\com.sysprogs.arm.stm32\STM32F30xxx\STM32F30x_StdPeriph_Driver\src\stm32f30x_usart.c" />
     <ClCompile Include="..\..\..\..\..\..\AppData\Local\VisualGDB\EmbeddedBSPs\arm-eabi\com.sysprogs.arm.stm32\STM32F30xxx\STM32F30x_StdPeriph_Driver\src\stm32f30x_wwdg.c" />
+    <ClCompile Include="source\buffer.c" />
     <ClCompile Include="source\circular-buffer.c" />
     <ClCompile Include="source\dac.c" />
     <ClCompile Include="source\delay.c" />
@@ -140,6 +141,7 @@
     <ClInclude Include="..\..\..\..\..\..\AppData\Local\VisualGDB\EmbeddedBSPs\arm-eabi\com.sysprogs.arm.stm32\STM32F30xxx\STM32F30x_StdPeriph_Driver\inc\stm32f30x_tim.h" />
     <ClInclude Include="..\..\..\..\..\..\AppData\Local\VisualGDB\EmbeddedBSPs\arm-eabi\com.sysprogs.arm.stm32\STM32F30xxx\STM32F30x_StdPeriph_Driver\inc\stm32f30x_usart.h" />
     <ClInclude Include="..\..\..\..\..\..\AppData\Local\VisualGDB\EmbeddedBSPs\arm-eabi\com.sysprogs.arm.stm32\STM32F30xxx\STM32F30x_StdPeriph_Driver\inc\stm32f30x_wwdg.h" />
+    <ClInclude Include="source\buffer.h" />
     <ClInclude Include="source\circular-buffer.h" />
     <ClInclude Include="source\dac.h" />
     <ClInclude Include="source\delay.h" />

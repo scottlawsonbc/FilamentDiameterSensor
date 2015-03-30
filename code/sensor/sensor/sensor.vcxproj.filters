@@ -130,6 +130,12 @@
     <ClCompile Include="source\i2c-commands.c">
       <Filter>Source files</Filter>
     </ClCompile>
+    <ClCompile Include="source\circular-buffer.c">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\buffer.c">
+      <Filter>Source files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile" />
@@ -280,6 +286,12 @@
       <Filter>Header files</Filter>
     </ClInclude>
     <ClInclude Include="source\main.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\circular-buffer.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\buffer.h">
       <Filter>Header files</Filter>
     </ClInclude>
   </ItemGroup>
