@@ -4,6 +4,22 @@ ENPH 459 - Engineering Physics Project I
 ----------------------------------------
 A Non-contact Diameter Measurement Device for 3D Printers and Filament Manufacturing
 
+The filament diameter sensor is based on the STM32F4 and uses a two-axis optical sensor to get an accurate measurement of filament diameter without contacting the filament.
+This makes the sensor especially suited for filament production since it can measure filament diameter even when it is soft and not able to be measured with physical methods.
+
+The sensor uses two laser diodes as coherent light sources and two photodiode arrays (like a single row camera) which rapidly measure the diameter.
+
+![Image of the filament diameter sensor with overlay showing the optical path and sensor arrangement.](pictures/filament-sensor.jpg)
+
+The project includes a simulator which models the optical system and allows different measurement functions to be tested with it.
+
+![Screenshot of the filament diameter sensor simulator, showing the optical path and measurements.](pictures/simulator.png)
+
+When used with a special build of Marlin firmware, print quality improves significantly.
+
+![Comparison of print quality when the filament sensor is enabled and disabled, showing substantial improvement in extrusion.](pictures/tower-comparison-side-by-side.jpg)
+
+
 ### File Organization ###
 
 1.  *Arduino* - 
